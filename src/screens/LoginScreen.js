@@ -13,6 +13,10 @@ const roleOptions = [
   { label: "Doctor", value: "doctor" },
   { label: "Nurse", value: "nurse" },
   { label: "Patient", value: "patient" },
+  { label: "Lab Technician", value: "lab_technician" },
+  { label: "Receptionist", value: "receptionist" },
+  { label: "Billing", value: "billing" },
+  { label: "Pharmacy", value: "pharmacy" },
 ];
 
 const routeByRole = {
@@ -21,6 +25,10 @@ const routeByRole = {
   doctor: "DoctorHome",
   nurse: "NurseHome",
   patient: "PatientHome",
+  lab_technician: "RoleHome",
+  receptionist: "RoleHome",
+  billing: "RoleHome",
+  pharmacy: "RoleHome",
 };
 
 export default function LoginScreen({ navigation }) {
