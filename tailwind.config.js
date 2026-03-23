@@ -1,3 +1,9 @@
+const appEnv = process.env.APP_ENV || 'apollo';
+require('dotenv').config({ path: `.env.${appEnv}` });
+
+const primary = process.env.PRIMARY_COLOR || "#7353ea";
+const secondary = process.env.SECONDARY_COLOR || "#4f34c4";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./App.js", "./src/**/*.{js,jsx}"],
@@ -6,13 +12,13 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          50: "#fffaf3",
-          100: "#fdf3e3",
-          200: "#f8e7d6",
-          500: "#7353ea",
-          600: "#5f3fe0",
-          700: "#4f34c4",
-          900: "#fff8ef",
+          50: `${primary}1a`, // very light
+          100: `${primary}33`, // light
+          200: `${primary}4d`,
+          500: primary,
+          600: secondary,
+          700: secondary,
+          900: `${primary}0d`, // faint bg
         },
         surface: {
           50: "#fffdf8",

@@ -13,22 +13,26 @@ import NurseHomeScreen from "../screens/NurseHomeScreen";
 import PatientHomeScreen from "../screens/PatientHomeScreen";
 import SplashScreen from "../screens/SplashScreen";
 import SuperAdminDashboardScreen from "../screens/SuperAdminDashboardScreen";
+import RoleHomeScreen from "../screens/RoleHomeScreen";
+import { useTheme } from "../context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 
-const navigationTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: "#fff8ef",
-    card: "#fffdf8",
-    text: "#251f33",
-    border: "#ece3d8",
-    primary: "#7353ea",
-  },
-};
-
 export default function AppNavigator() {
+  const { theme } = useTheme();
+
+  const navigationTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: "#fff8ef",
+      card: "#fffdf8",
+      text: "#251f33",
+      border: "#ece3d8",
+      primary: theme.colors.primary,
+    },
+  };
+
   return (
     <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
@@ -110,6 +114,11 @@ export default function AppNavigator() {
           name="CreatePatient"
           component={CreatePatientScreen}
           options={{ title: "Create Patient" }}
+        />
+        <Stack.Screen
+          name="RoleHome"
+          component={RoleHomeScreen}
+          options={{ title: "Employee Dashboard" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

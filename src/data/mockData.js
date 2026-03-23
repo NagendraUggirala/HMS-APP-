@@ -137,6 +137,38 @@ export const mockUsers = [
     password: "123456",
     hospitalId: "hospital-1",
   },
+  {
+    id: "lab-user-1",
+    role: "lab_technician",
+    name: "Rajesh Kumar",
+    email: "lab@hms.com",
+    password: "123456",
+    hospitalId: "hospital-1",
+  },
+  {
+    id: "receptionist-user-1",
+    role: "receptionist",
+    name: "Sunita Reddy",
+    email: "receptionist@hms.com",
+    password: "123456",
+    hospitalId: "hospital-1",
+  },
+  {
+    id: "billing-user-1",
+    role: "billing",
+    name: "Karan Singh",
+    email: "billing@hms.com",
+    password: "123456",
+    hospitalId: "hospital-1",
+  },
+  {
+    id: "pharmacy-user-1",
+    role: "pharmacy",
+    name: "Vikram Das",
+    email: "pharmacy@hms.com",
+    password: "123456",
+    hospitalId: "hospital-1",
+  },
 ];
 
 export const initialNotifications = [
