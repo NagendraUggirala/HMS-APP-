@@ -9,10 +9,8 @@ import { useAppContext } from "../context/AppContext";
 
 const roleOptions = [
   { label: "Superadmin", value: "superadmin" },
-  { label: "Admin", value: "admin" },
   { label: "Doctor", value: "doctor" },
   { label: "Nurse", value: "nurse" },
-  { label: "Patient", value: "patient" },
   { label: "Lab Technician", value: "lab_technician" },
   { label: "Receptionist", value: "receptionist" },
   { label: "Billing", value: "billing" },
@@ -21,14 +19,12 @@ const roleOptions = [
 
 const routeByRole = {
   superadmin: "SuperAdminDashboard",
-  admin: "AdminDashboard",
-  doctor: "DoctorHome",
-  nurse: "NurseHome",
-  patient: "PatientHome",
-  lab_technician: "RoleHome",
-  receptionist: "RoleHome",
-  billing: "RoleHome",
-  pharmacy: "RoleHome",
+  doctor: "DoctorDashboard",
+  nurse: "NurseDashboard",
+  lab_technician: "LabTechnicianDashboard",
+  receptionist: "ReceptionistDashboard",
+  billing: "BillingDashboard",
+  pharmacy: "PharmacyDashboard",
 };
 
 export default function LoginScreen({ navigation }) {

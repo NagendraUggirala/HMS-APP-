@@ -11,6 +11,15 @@ import {
 } from "../data/mockData";
 
 const AppContext = createContext(null);
+const enabledRoles = new Set([
+  "superadmin",
+  "doctor",
+  "nurse",
+  "lab_technician",
+  "receptionist",
+  "billing",
+  "pharmacy",
+]);
 
 const createId = (prefix) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -26,6 +35,13 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState(initialNotifications);
 
   const login = ({ role, email, password }) => {
+    if (!enabledRoles.has(role)) {
+      return {
+        success: false,
+        message: "This role is not enabled in the current mobile flow.",
+      };
+    }
+
     const matchedUser = authUsers.find(
       (user) =>
         user.role === role &&
