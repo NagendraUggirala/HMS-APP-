@@ -1,19 +1,14 @@
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AdminDashboardScreen from "../screens/AdminDashboardScreen";
-import CreateAdminScreen from "../screens/CreateAdminScreen";
-import CreateDoctorScreen from "../screens/CreateDoctorScreen";
-import CreateHospitalScreen from "../screens/CreateHospitalScreen";
-import CreateNurseScreen from "../screens/CreateNurseScreen";
-import CreatePatientScreen from "../screens/CreatePatientScreen";
-import DoctorHomeScreen from "../screens/DoctorHomeScreen";
-import HospitalDashboardScreen from "../screens/HospitalDashboardScreen";
+import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
+import DoctorDashboardScreen from "../screens/Doctor/DoctorDashboardScreen";
+import LabTechnicianDashboardScreen from "../screens/LabTechnician/LabTechnicianDashboardScreen";
 import LoginScreen from "../screens/LoginScreen";
-import NurseHomeScreen from "../screens/NurseHomeScreen";
-import PatientHomeScreen from "../screens/PatientHomeScreen";
+import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
+import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
+import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
 import SplashScreen from "../screens/SplashScreen";
-import SuperAdminDashboardScreen from "../screens/SuperAdminDashboardScreen";
-import RoleHomeScreen from "../screens/RoleHomeScreen";
+import SuperAdminDashboardScreen from "../screens/SuperAdmin/SuperAdminDashboardScreen";
 import { useTheme } from "../context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
@@ -66,59 +61,34 @@ export default function AppNavigator() {
           options={{ title: "Superadmin Dashboard" }}
         />
         <Stack.Screen
-          name="AdminDashboard"
-          component={AdminDashboardScreen}
-          options={{ title: "Admin Dashboard" }}
+          name="DoctorDashboard"
+          component={DoctorDashboardScreen}
+          options={{ title: "Doctor Dashboard" }}
         />
         <Stack.Screen
-          name="DoctorHome"
-          component={DoctorHomeScreen}
-          options={{ title: "Doctor Home" }}
+          name="NurseDashboard"
+          component={NurseDashboardScreen}
+          options={{ title: "Nurse Dashboard" }}
         />
         <Stack.Screen
-          name="NurseHome"
-          component={NurseHomeScreen}
-          options={{ title: "Nurse Home" }}
+          name="LabTechnicianDashboard"
+          component={LabTechnicianDashboardScreen}
+          options={{ title: "Lab Technician Dashboard" }}
         />
         <Stack.Screen
-          name="PatientHome"
-          component={PatientHomeScreen}
-          options={{ title: "Patient Home" }}
+          name="ReceptionistDashboard"
+          component={ReceptionistDashboardScreen}
+          options={{ title: "Receptionist Dashboard" }}
         />
         <Stack.Screen
-          name="CreateHospital"
-          component={CreateHospitalScreen}
-          options={{ title: "Create Hospital" }}
+          name="BillingDashboard"
+          component={BillingDashboardScreen}
+          options={{ title: "Billing Dashboard" }}
         />
         <Stack.Screen
-          name="CreateAdmin"
-          component={CreateAdminScreen}
-          options={{ title: "Create Admin" }}
-        />
-        <Stack.Screen
-          name="HospitalDashboard"
-          component={HospitalDashboardScreen}
-          options={{ title: "Hospital Dashboard" }}
-        />
-        <Stack.Screen
-          name="CreateDoctor"
-          component={CreateDoctorScreen}
-          options={{ title: "Create Doctor" }}
-        />
-        <Stack.Screen
-          name="CreateNurse"
-          component={CreateNurseScreen}
-          options={{ title: "Create Nurse" }}
-        />
-        <Stack.Screen
-          name="CreatePatient"
-          component={CreatePatientScreen}
-          options={{ title: "Create Patient" }}
-        />
-        <Stack.Screen
-          name="RoleHome"
-          component={RoleHomeScreen}
-          options={{ title: "Employee Dashboard" }}
+          name="PharmacyDashboard"
+          component={PharmacyDashboardScreen}
+          options={{ title: "Pharmacy Dashboard" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
