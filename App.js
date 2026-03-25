@@ -13,7 +13,7 @@ export default function App() {
         <ThemeProvider>
           <HospitalProvider>
             <AppProvider>
-              <StatusBar style="light" />
+              <StatusBar style="dark" backgroundColor="#f7f9fb" translucent={false} />
               <AppNavigator />
             </AppProvider>
           </HospitalProvider>
