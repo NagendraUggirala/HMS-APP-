@@ -8,7 +8,7 @@ import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
 import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
 import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
 import SplashScreen from "../screens/SplashScreen";
-import SuperAdminDashboardScreen from "../screens/SuperAdmin/SuperAdminDashboardScreen";
+import HospitalAdminDashboardScreen from "../screens/SuperAdmin/HospitalAdminDashboardScreen";
 import { useTheme } from "../context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
@@ -56,9 +56,9 @@ export default function AppNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="SuperAdminDashboard"
-          component={SuperAdminDashboardScreen}
-          options={{ title: "Superadmin Dashboard" }}
+          name="HospitalAdminDashboard"
+          component={HospitalAdminDashboardScreen}
+          options={{ title: "Hospital Admin Dashboard" }}
         />
         <Stack.Screen
           name="DoctorDashboard"
