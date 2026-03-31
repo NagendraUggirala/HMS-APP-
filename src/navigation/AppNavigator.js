@@ -1,14 +1,33 @@
+import React from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
-import DoctorDashboardScreen from "../screens/Doctor/DoctorDashboardScreen";
-import LabTechnicianDashboardScreen from "../screens/LabTechnician/LabTechnicianDashboardScreen";
-import LoginScreen from "../screens/LoginScreen";
-import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
-import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
-import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
+
+// User dashboards
 import SplashScreen from "../screens/SplashScreen";
-import HospitalAdminDashboardScreen from "../screens/SuperAdmin/HospitalAdminDashboardScreen";
+import LoginScreen from "../screens/LoginScreen";
+import DoctorDashboardScreen from "../screens/Doctor/DoctorDashboardScreen";
+import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
+import LabTechnicianDashboardScreen from "../screens/LabTechnician/LabTechnicianDashboardScreen";
+import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
+import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
+import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
+
+// Admin screens
+import AdminSidebarScreen from "../screens/Admin/AdminsidebarScreen";
+import DashboardOverview from "../screens/Admin/DashboardScreen";
+import HospitalProfile from "../screens/Admin/HospitalScreen";
+import DoctorManagement from "../screens/Admin/DashboardScreen";
+import StaffManagement from "../screens/Admin/SettingsScreen";
+import DepartmentManagement from "../screens/Admin/DashboardScreen";
+import AssignDepartments from "../screens/Admin/AdminsidebarScreen";
+import AppointmentManagement from "../screens/Admin/AppointmentsScreen";
+import BillingManagement from "../screens/Admin/BillingScreen";
+import InpatientManagement from "../screens/Admin/InpatientScreen";
+import PharmacyManagement from "../screens/Admin/PharmacyScreen";
+import LabManagement from "../screens/Admin/LabScreen";
+import ReportsManagement from "../screens/Admin/ReportsScreen";
+import SettingsManagement from "../screens/Admin/SettingsScreen";
+
 import { useTheme } from "../context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
@@ -33,63 +52,39 @@ export default function AppNavigator() {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{
-          headerStyle: {
-            backgroundColor: "#fffdf8",
-          },
+          headerStyle: { backgroundColor: "#fffdf8" },
           headerTintColor: "#251f33",
-          headerTitleStyle: {
-            fontWeight: "700",
-          },
-          contentStyle: {
-            backgroundColor: "#fff8ef",
-          },
+          headerTitleStyle: { fontWeight: "700" },
+          contentStyle: { backgroundColor: "#fff8ef" },
         }}
       >
-        <Stack.Screen
-          name="Splash"
-          component={SplashScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="HospitalAdminDashboard"
-          component={HospitalAdminDashboardScreen}
-          options={{ title: "Hospital Admin Dashboard" }}
-        />
-        <Stack.Screen
-          name="DoctorDashboard"
-          component={DoctorDashboardScreen}
-          options={{ title: "Doctor Dashboard" }}
-        />
-        <Stack.Screen
-          name="NurseDashboard"
-          component={NurseDashboardScreen}
-          options={{ title: "Nurse Dashboard" }}
-        />
-        <Stack.Screen
-          name="LabTechnicianDashboard"
-          component={LabTechnicianDashboardScreen}
-          options={{ title: "Lab Technician Dashboard" }}
-        />
-        <Stack.Screen
-          name="ReceptionistDashboard"
-          component={ReceptionistDashboardScreen}
-          options={{ title: "Receptionist Dashboard" }}
-        />
-        <Stack.Screen
-          name="BillingDashboard"
-          component={BillingDashboardScreen}
-          options={{ title: "Billing Dashboard" }}
-        />
-        <Stack.Screen
-          name="PharmacyDashboard"
-          component={PharmacyDashboardScreen}
-          options={{ title: "Pharmacy Dashboard" }}
-        />
+        {/* Public / Entry Screens */}
+        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+
+        {/* Admin Dashboard & Management */}
+        <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ title: "Admin Dashboard" }} />
+        <Stack.Screen name="DashboardOverview" component={DashboardOverview} options={{ title: "Dashboard Overview" }} />
+        <Stack.Screen name="HospitalProfile" component={HospitalProfile} options={{ title: "Hospital Profile" }} />
+        <Stack.Screen name="DoctorManagement" component={DoctorManagement} options={{ title: "Doctor Management" }} />
+        <Stack.Screen name="StaffManagement" component={StaffManagement} options={{ title: "Staff Management" }} />
+        <Stack.Screen name="DepartmentManagement" component={DepartmentManagement} options={{ title: "Department Management" }} />
+        <Stack.Screen name="AssignDepartments" component={AssignDepartments} options={{ title: "Department Assignment" }} />
+        <Stack.Screen name="AppointmentManagement" component={AppointmentManagement} options={{ title: "Appointment Management" }} />
+        <Stack.Screen name="BillingManagement" component={BillingManagement} options={{ title: "Billing & Finance" }} />
+        <Stack.Screen name="InpatientManagement" component={InpatientManagement} options={{ title: "Inpatient Management" }} />
+        <Stack.Screen name="PharmacyManagement" component={PharmacyManagement} options={{ title: "Pharmacy Management" }} />
+        <Stack.Screen name="LabManagement" component={LabManagement} options={{ title: "Lab Management" }} />
+        <Stack.Screen name="ReportsManagement" component={ReportsManagement} options={{ title: "Reports" }} />
+        <Stack.Screen name="SettingsManagement" component={SettingsManagement} options={{ title: "Settings" }} />
+
+        {/* General User Dashboards */}
+        <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} options={{ title: "Doctor Dashboard" }} />
+        <Stack.Screen name="NurseDashboard" component={NurseDashboardScreen} options={{ title: "Nurse Dashboard" }} />
+        <Stack.Screen name="LabTechnicianDashboard" component={LabTechnicianDashboardScreen} options={{ title: "Lab Technician Dashboard" }} />
+        <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ title: "Receptionist Dashboard" }} />
+        <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
+        <Stack.Screen name="PharmacyDashboard" component={PharmacyDashboardScreen} options={{ title: "Pharmacy Dashboard" }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
