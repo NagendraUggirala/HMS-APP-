@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Alert,
+  ActivityIndicator,
   ScrollView,
   Switch,
   Text,
@@ -12,61 +13,53 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useAppContext } from "../context/AppContext";
 
 const roleOptions = [
-  { label: "Hospital Admin", value: "superadmin" },
+  { label: "Hospital Admin", value: "hospital_admin" },
   { label: "Doctor", value: "doctor" },
   { label: "Nurse", value: "nurse" },
-  { label: "Lab Technician", value: "lab_technician" },
+  { label: "Lab Technician", value: "lab_tech" },
   { label: "Receptionist", value: "receptionist" },
-  { label: "Billing", value: "billing" },
-  { label: "Pharmacy", value: "pharmacy" },
+  { label: "Pharmacist", value: "pharmacist" },
 ];
 
 const routeByRole = {
-  superadmin: "HospitalAdminDashboard",
+  hospital_admin: "HospitalAdminDashboard",
   doctor: "DoctorDashboard",
   nurse: "NurseDashboard",
-  lab_technician: "LabTechnicianDashboard",
+  lab_tech: "LabTechnicianDashboard",
   receptionist: "ReceptionistDashboard",
-  billing: "BillingDashboard",
-  pharmacy: "PharmacyDashboard",
+  pharmacist: "PharmacyDashboard",
 };
 
 export default function LoginScreen({ navigation }) {
-  const { authUsers, login } = useAppContext();
-  const [selectedRole, setSelectedRole] = useState("superadmin");
-  const [email, setEmail] = useState("superadmin@hms.com");
-  const [password, setPassword] = useState("123456");
+  const { login } = useAppContext();
+  const [selectedRole, setSelectedRole] = useState("hospital_admin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
   const [remember, setRemember] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
-  const selectedAccount = useMemo(
-    () => authUsers.find((user) => user.role === selectedRole),
-    [authUsers, selectedRole]
-  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
     setIsRoleMenuOpen(false);
-
-    const account = authUsers.find((user) => user.role === role);
-    setEmail(account?.email || "");
-    setPassword(account?.password || "123456");
   };
 
-  const handleLogin = () => {
-    const result = login({
-      role: selectedRole,
-      email,
+  const handleLogin = async () => {
+    setIsLoading(true);
+    const result = await login({
+      expectedRole: selectedRole,
+      email: email.trim(),
       password,
     });
+    setIsLoading(false);
 
     if (!result.success) {
       Alert.alert("Login failed", result.message);
       return;
     }
 
-    navigation.replace(routeByRole[selectedRole]);
+    navigation.replace(routeByRole[result.user.role] || "HospitalAdminDashboard");
   };
 
   return (
@@ -155,11 +148,18 @@ export default function LoginScreen({ navigation }) {
           className="h-14 flex-row items-center justify-center rounded-full bg-[#00685f]"
           onPress={handleLogin}
           activeOpacity={0.9}
+          disabled={isLoading}
         >
-          <Text className="mr-2 text-lg font-bold text-white">
-            Sign In
-          </Text>
-          <MaterialIcons name="arrow-forward" size={20} color="white" />
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <>
+              <Text className="mr-2 text-lg font-bold text-white">
+                Sign In
+              </Text>
+              <MaterialIcons name="arrow-forward" size={20} color="white" />
+            </>
+          )}
         </TouchableOpacity>
 
         <View className="mt-6 items-center">
@@ -168,8 +168,7 @@ export default function LoginScreen({ navigation }) {
             Request Credentials
           </Text>
           <Text className="mt-4 text-xs text-gray-500">
-            Demo: {selectedAccount?.email || "No account available"} /{" "}
-            {selectedAccount?.password || "123456"}
+            Use backend credentials from PostgreSQL (manual insert)
           </Text>
         </View>
       </View>

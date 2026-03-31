@@ -1,7 +1,17 @@
 import Constants from 'expo-constants';
 
 const extra = Constants.expoConfig?.extra || {};
-const BASE_URL = extra.API_BASE_URL || "https://api.example.com";
+// Must match app.config.js DEFAULT_API_BASE_URL; block stale ngrok baked into cached config.
+const DEFAULT_API_BASE_URL = "https://hospital-backend-9mg3.onrender.com";
+function resolveBaseUrl() {
+  let raw = extra.API_BASE_URL || DEFAULT_API_BASE_URL;
+  raw = String(raw).trim();
+  if (!raw || /ngrok/i.test(raw)) {
+    return DEFAULT_API_BASE_URL;
+  }
+  return raw.replace(/\/+$/, "");
+}
+const BASE_URL = resolveBaseUrl();
 const HOSPITAL_ID = extra.HOSPITAL_ID || "apollo";
 
 class ApiService {
@@ -52,18 +62,47 @@ class ApiService {
     return this.handleResponse(response);
   }
 
+  async adminStaffLogin(email, password) {
+    return this.post('/api/v1/auth/login', { email, password });
+  }
+
+  async patientLogin(email, password) {
+    return this.post('/api/v1/auth/patient/login', { email, password });
+  }
+
+  async getMe(token) {
+    return this.get('/api/v1/auth/me', {
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
   async handleResponse(response) {
-    if (!response.ok) {
-      const errorText = await response.text();
-      let errorData;
+    const responseText = await response.text();
+    let responseData = {};
+
+    if (responseText) {
       try {
-        errorData = JSON.parse(errorText);
+        responseData = JSON.parse(responseText);
       } catch (e) {
-        throw new Error(errorText || 'API request failed');
+        if (!response.ok) {
+          throw new Error(responseText || 'API request failed');
+        }
       }
-      throw new Error(errorData.message || 'API request failed');
     }
-    return response.json();
+
+    if (!response.ok) {
+      const detail = responseData?.detail;
+      const nestedMessage =
+        (typeof detail === 'object' && detail?.message) ||
+        (typeof responseData?.error === 'object' && responseData?.error?.message);
+      throw new Error(nestedMessage || responseData?.message || 'API request failed');
+    }
+
+    if (responseData && responseData.success === true && Object.prototype.hasOwnProperty.call(responseData, 'data')) {
+      return responseData.data;
+    }
+
+    return responseData;
   }
 }
 

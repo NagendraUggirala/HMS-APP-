@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { api } from "../services/api";
 import {
   adminConfigSections,
   initialAdmins,
@@ -11,21 +12,21 @@ import {
 } from "../data/mockData";
 
 const AppContext = createContext(null);
-const enabledRoles = new Set([
-  "superadmin",
-  "doctor",
-  "nurse",
-  "lab_technician",
-  "receptionist",
-  "billing",
-  "pharmacy",
-]);
+const BACKEND_ROLE_TO_APP_ROLE = {
+  HOSPITAL_ADMIN: "hospital_admin",
+  DOCTOR: "doctor",
+  NURSE: "nurse",
+  LAB_TECH: "lab_tech",
+  RECEPTIONIST: "receptionist",
+  PHARMACIST: "pharmacist",
+};
 
 const createId = (prefix) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
   const [authUsers, setAuthUsers] = useState(mockUsers);
   const [hospitals, setHospitals] = useState(initialHospitals);
   const [admins, setAdmins] = useState(initialAdmins);
@@ -34,33 +35,49 @@ export function AppProvider({ children }) {
   const [patients, setPatients] = useState(initialPatients);
   const [notifications, setNotifications] = useState(initialNotifications);
 
-  const login = ({ role, email, password }) => {
-    if (!enabledRoles.has(role)) {
+  const login = async ({ expectedRole, email, password }) => {
+    try {
+      const authData = await api.adminStaffLogin(email, password);
+      const backendRoles = authData?.user?.roles || [];
+      const primaryBackendRole = backendRoles[0];
+      const appRole = BACKEND_ROLE_TO_APP_ROLE[primaryBackendRole];
+
+      if (!appRole) {
+        return {
+          success: false,
+          message: "This account role is not supported in the mobile app yet.",
+        };
+      }
+
+      if (expectedRole && appRole !== expectedRole) {
+        return {
+          success: false,
+          message: `Selected role does not match account role (${appRole}).`,
+        };
+      }
+
+      const user = {
+        id: authData?.user?.id,
+        role: appRole,
+        name: `${authData?.user?.first_name || ""} ${authData?.user?.last_name || ""}`.trim(),
+        email: authData?.user?.email || email,
+        hospitalId: authData?.user?.hospital_id || null,
+        backendRoles,
+      };
+
+      setAuthToken(authData?.access_token || null);
+      setCurrentUser(user);
+      return { success: true, user };
+    } catch (error) {
       return {
         success: false,
-        message: "This role is not enabled in the current mobile flow.",
+        message: error?.message || "Login failed. Please check credentials.",
       };
     }
-
-    const matchedUser = authUsers.find(
-      (user) =>
-        user.role === role &&
-        user.email.toLowerCase() === email.trim().toLowerCase() &&
-        user.password === password
-    );
-
-    if (!matchedUser) {
-      return {
-        success: false,
-        message: "Use one of the mock login accounts shown on the login screen.",
-      };
-    }
-
-    setCurrentUser(matchedUser);
-    return { success: true, user: matchedUser };
   };
 
   const logout = () => {
+    setAuthToken(null);
     setCurrentUser(null);
   };
 
@@ -225,6 +242,7 @@ export function AppProvider({ children }) {
     () => ({
       currentUser,
       currentRole: currentUser?.role || null,
+      authToken,
       hospitals,
       admins,
       doctors,
@@ -254,6 +272,7 @@ export function AppProvider({ children }) {
     }),
     [
       activeHospitalsCount,
+      authToken,
       admins,
       currentHospital,
       currentUser,

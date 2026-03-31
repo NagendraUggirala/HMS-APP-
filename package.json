@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
-    "start:apollo": "cross-env APP_ENV=apollo expo start",
-    "start:care": "cross-env APP_ENV=care expo start",
+    "start": "expo start --port 8080",
+    "start:apollo": "cross-env APP_ENV=apollo expo start --port 8080",
+    "start:care": "cross-env APP_ENV=care expo start --port 8080",
     "build:apollo": "cross-env APP_ENV=apollo expo export",
     "build:care": "cross-env APP_ENV=care expo export",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "android": "expo start --android --port 8080",
+    "ios": "expo start --ios --port 8080",
+    "web": "expo start --web --port 8080"
   },
   "dependencies": {
     "@react-navigation/native": "^7.1.33",
