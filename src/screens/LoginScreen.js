@@ -22,7 +22,7 @@ const roleOptions = [
 ];
 
 const routeByRole = {
-  hospital_admin: "HospitalAdminDashboard",
+  hospital_admin: "DashboardOverview",
   doctor: "DoctorDashboard",
   nurse: "NurseDashboard",
   lab_tech: "LabTechnicianDashboard",
