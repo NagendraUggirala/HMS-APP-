@@ -16,10 +16,10 @@ import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen
 import AdminSidebarScreen from "../screens/Admin/AdminsidebarScreen";
 import DashboardOverview from "../screens/Admin/DashboardScreen";
 import HospitalProfile from "../screens/Admin/HospitalScreen";
-import DoctorManagement from "../screens/Admin/DashboardScreen";
-import StaffManagement from "../screens/Admin/SettingsScreen";
-import DepartmentManagement from "../screens/Admin/DashboardScreen";
-import AssignDepartments from "../screens/Admin/AdminsidebarScreen";
+import DoctorManagement from "../screens/Admin/DocterScreen";
+import StaffManagement from "../screens/Admin/StaffScreen";
+import DepartmentManagement from "../screens/Admin/DepartmentsScreen";
+import AssignDepartments from "../screens/Admin/AssignDepartmentsScreen";
 import AppointmentManagement from "../screens/Admin/AppointmentsScreen";
 import BillingManagement from "../screens/Admin/BillingScreen";
 import InpatientManagement from "../screens/Admin/InpatientScreen";
@@ -27,6 +27,7 @@ import PharmacyManagement from "../screens/Admin/PharmacyScreen";
 import LabManagement from "../screens/Admin/LabScreen";
 import ReportsManagement from "../screens/Admin/ReportsScreen";
 import SettingsManagement from "../screens/Admin/SettingsScreen";
+
 
 import { useTheme } from "../context/ThemeContext";
 
@@ -63,20 +64,21 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
 
         {/* Admin Dashboard & Management */}
-        <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ title: "Admin Dashboard" }} />
-        <Stack.Screen name="DashboardOverview" component={DashboardOverview} options={{ title: "Dashboard Overview" }} />
-        <Stack.Screen name="HospitalProfile" component={HospitalProfile} options={{ title: "Hospital Profile" }} />
-        <Stack.Screen name="DoctorManagement" component={DoctorManagement} options={{ title: "Doctor Management" }} />
-        <Stack.Screen name="StaffManagement" component={StaffManagement} options={{ title: "Staff Management" }} />
-        <Stack.Screen name="DepartmentManagement" component={DepartmentManagement} options={{ title: "Department Management" }} />
-        <Stack.Screen name="AssignDepartments" component={AssignDepartments} options={{ title: "Department Assignment" }} />
-        <Stack.Screen name="AppointmentManagement" component={AppointmentManagement} options={{ title: "Appointment Management" }} />
-        <Stack.Screen name="BillingManagement" component={BillingManagement} options={{ title: "Billing & Finance" }} />
-        <Stack.Screen name="InpatientManagement" component={InpatientManagement} options={{ title: "Inpatient Management" }} />
-        <Stack.Screen name="PharmacyManagement" component={PharmacyManagement} options={{ title: "Pharmacy Management" }} />
-        <Stack.Screen name="LabManagement" component={LabManagement} options={{ title: "Lab Management" }} />
-        <Stack.Screen name="ReportsManagement" component={ReportsManagement} options={{ title: "Reports" }} />
-        <Stack.Screen name="SettingsManagement" component={SettingsManagement} options={{ title: "Settings" }} />
+        <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DashboardOverview" component={DashboardOverview} options={{ headerShown: false }} />
+        <Stack.Screen name="HospitalProfile" component={HospitalProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="DoctorManagement" component={DoctorManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="StaffManagement" component={StaffManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="DepartmentManagement" component={DepartmentManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="AssignDepartments" component={AssignDepartments} options={{ headerShown: false }} />
+        <Stack.Screen name="AppointmentManagement" component={AppointmentManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="BillingManagement" component={BillingManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="InpatientManagement" component={InpatientManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="PharmacyManagement" component={PharmacyManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="LabManagement" component={LabManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="ReportsManagement" component={ReportsManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="SettingsManagement" component={SettingsManagement} options={{ headerShown: false }} />
+
 
         {/* General User Dashboards */}
         <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} options={{ title: "Doctor Dashboard" }} />
