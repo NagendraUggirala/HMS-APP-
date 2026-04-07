@@ -1,15 +1,31 @@
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { View, Text } from "react-native";
+import { useAppContext } from "../context/AppContext";
 import ScreenContainer from "../components/ScreenContainer";
 
 export default function SplashScreen({ navigation }) {
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigation.replace("Login");
-    }, 3000);
+  const { isInitializing, currentUser } = useAppContext();
 
-    return () => clearTimeout(timeout);
-  }, [navigation]);
+  const routeByRole = {
+    hospital_admin: "DashboardOverview",
+    doctor: "DoctorDashboard",
+    nurse: "NurseDashboard",
+    lab_tech: "LabTechnicianDashboard",
+    receptionist: "ReceptionistDashboard",
+    pharmacist: "PharmacyDashboard",
+  };
+
+  useEffect(() => {
+    if (!isInitializing) {
+      if (currentUser && currentUser.role) {
+        // User is logged in, redirect to their role-specific dashboard
+        navigation.replace(routeByRole[currentUser.role] || "HospitalAdminDashboard");
+      } else {
+        // No user found, redirect to login
+        navigation.replace("Login");
+      }
+    }
+  }, [isInitializing, currentUser, navigation]);
 
   return (
     <ScreenContainer scroll={false}>

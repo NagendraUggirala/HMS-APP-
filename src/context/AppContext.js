@@ -1,4 +1,5 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from "../services/api";
 import {
   adminConfigSections,
@@ -13,6 +14,7 @@ import {
 
 const AppContext = createContext(null);
 const BACKEND_ROLE_TO_APP_ROLE = {
+ 
   HOSPITAL_ADMIN: "hospital_admin",
   DOCTOR: "doctor",
   NURSE: "nurse",
@@ -34,13 +36,41 @@ export function AppProvider({ children }) {
   const [nurses, setNurses] = useState(initialNurses);
   const [patients, setPatients] = useState(initialPatients);
   const [notifications, setNotifications] = useState(initialNotifications);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Load persisted auth data on mount
+  useEffect(() => {
+    async function loadStoredAuth() {
+      try {
+        const storedToken = await AsyncStorage.getItem('authToken');
+        const storedUser = await AsyncStorage.getItem('currentUser');
+        
+        if (storedToken && storedUser) {
+          setAuthToken(storedToken);
+          setCurrentUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error("Error loading stored auth:", error);
+      } finally {
+        // Add a small delay for a smoother splash experience if needed
+        setTimeout(() => setIsInitializing(false), 1500);
+      }
+    }
+    loadStoredAuth();
+  }, []);
 
   const login = async ({ expectedRole, email, password }) => {
     try {
       const authData = await api.adminStaffLogin(email, password);
+      console.log("[AppContext:Login] AuthData result successfully received.");
       const backendRoles = authData?.user?.roles || [];
       const primaryBackendRole = backendRoles[0];
-      const appRole = BACKEND_ROLE_TO_APP_ROLE[primaryBackendRole];
+      
+      // Robust mapping: handle potentially different casing or unexpected variations
+      const normalizedRole = primaryBackendRole?.toString().toUpperCase();
+      const appRole = BACKEND_ROLE_TO_APP_ROLE[normalizedRole] || BACKEND_ROLE_TO_APP_ROLE[primaryBackendRole];
+      
+      console.log(`[AppContext:Login] BackendRole: ${primaryBackendRole}, AppRole: ${appRole}`);
 
       if (!appRole) {
         return {
@@ -50,6 +80,7 @@ export function AppProvider({ children }) {
       }
 
       if (expectedRole && appRole !== expectedRole) {
+        console.warn(`[AppContext:Login] Role mismatch: ${appRole} vs expected ${expectedRole}`);
         return {
           success: false,
           message: `Selected role does not match account role (${appRole}).`,
@@ -67,6 +98,13 @@ export function AppProvider({ children }) {
 
       setAuthToken(authData?.access_token || null);
       setCurrentUser(user);
+
+      // Persist to storage
+      if (authData?.access_token) {
+        await AsyncStorage.setItem('authToken', authData.access_token);
+        await AsyncStorage.setItem('currentUser', JSON.stringify(user));
+      }
+
       return { success: true, user };
     } catch (error) {
       return {
@@ -76,9 +114,15 @@ export function AppProvider({ children }) {
     }
   };
 
-  const logout = () => {
-    setAuthToken(null);
-    setCurrentUser(null);
+  const logout = async () => {
+    try {
+      setAuthToken(null);
+      setCurrentUser(null);
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('currentUser');
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const addHospital = (hospital) => {
@@ -251,6 +295,7 @@ export function AppProvider({ children }) {
       notifications,
       adminConfigSections,
       authUsers,
+      isInitializing,
       login,
       logout,
       addHospital,
@@ -282,6 +327,7 @@ export function AppProvider({ children }) {
       notifications,
       authUsers,
       patients,
+      isInitializing,
     ]
   );
 

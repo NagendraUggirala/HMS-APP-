@@ -5,12 +5,22 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // User dashboards
 import SplashScreen from "../screens/SplashScreen";
 import LoginScreen from "../screens/LoginScreen";
+import ForgetScreen from "../screens/ForgetScreen";
 import DoctorDashboardScreen from "../screens/Doctor/DoctorDashboardScreen";
 import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
 import LabTechnicianDashboardScreen from "../screens/LabTechnician/LabTechnicianDashboardScreen";
 import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
 import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
 import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
+
+// Doctor specific screens
+import AppointmentsScreen from "../screens/Doctor/AppointmentsScreen";
+import PatientRecordsScree from "../screens/Doctor/PatientRecordsScree";
+import Prescriptions from "../screens/Doctor/Prescriptions";
+import LabResults from "../screens/Doctor/LabResults";
+import InpatientVisits from "../screens/Doctor/InpatientVisits";
+import Messaging from "../screens/Doctor/Messaging";
+import MyProfile from "../screens/Doctor/MyProfile";
 
 // Admin screens
 import AdminSidebarScreen from "../screens/Admin/AdminsidebarScreen";
@@ -62,6 +72,7 @@ export default function AppNavigator() {
         {/* Public / Entry Screens */}
         <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ForgetPassword" component={ForgetScreen} options={{ headerShown: false }} />
 
         {/* Admin Dashboard & Management */}
         <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
@@ -80,8 +91,17 @@ export default function AppNavigator() {
         <Stack.Screen name="SettingsManagement" component={SettingsManagement} options={{ headerShown: false }} />
 
 
+        {/* Doctor Dashboard & Management */}
+        <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DoctorAppointments" component={AppointmentsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="PatientRecords" component={PatientRecordsScree} options={{ headerShown: false }} />
+        <Stack.Screen name="PrescriptionManagement" component={Prescriptions} options={{ headerShown: false }} />
+        <Stack.Screen name="LabResults" component={LabResults} options={{ headerShown: false }} />
+        <Stack.Screen name="InpatientVisits" component={InpatientVisits} options={{ headerShown: false }} />
+        <Stack.Screen name="DoctorMessaging" component={Messaging} options={{ headerShown: false }} />
+        <Stack.Screen name="DoctorProfile" component={MyProfile} options={{ headerShown: false }} />
+
         {/* General User Dashboards */}
-        <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} options={{ title: "Doctor Dashboard" }} />
         <Stack.Screen name="NurseDashboard" component={NurseDashboardScreen} options={{ title: "Nurse Dashboard" }} />
         <Stack.Screen name="LabTechnicianDashboard" component={LabTechnicianDashboardScreen} options={{ title: "Lab Technician Dashboard" }} />
         <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ title: "Receptionist Dashboard" }} />
