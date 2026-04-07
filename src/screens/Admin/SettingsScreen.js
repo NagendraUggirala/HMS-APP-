@@ -1,5 +1,4 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Switch } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AdminLayout, { useSidebar } from "./AdminLayout";
 
@@ -7,7 +6,7 @@ const SettingsContent = () => {
   const { toggleSidebar } = useSidebar();
   
   return (
-    <SafeAreaView className="flex-1 bg-[#F8FAFC]">
+    <View className="flex-1 bg-[#F8FAFC]">
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
         <View className="flex-row items-center">
           <TouchableOpacity onPress={toggleSidebar} className="mr-4 h-11 w-11 items-center justify-center rounded-2xl bg-blue-50">
@@ -59,11 +58,11 @@ const SettingsContent = () => {
         </View>
 
         <TouchableOpacity className="bg-rose-50 p-5 rounded-3xl items-center flex-row justify-center border border-rose-100">
-           <Ionicons name="trash-outline" size={18} color="#ef4444" className="mr-2" />
+           <Ionicons name="trash-outline" size={18} color="#ef4444" style={{ marginRight: 8 }} />
            <Text className="ml-2 text-rose-600 font-bold">Wipe App Cache</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

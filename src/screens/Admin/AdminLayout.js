@@ -6,6 +6,7 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Sidebar from "./AdminsidebarScreen";
 
 const { width } = Dimensions.get("window");
@@ -41,7 +42,7 @@ const AdminLayout = ({ children }) => {
 
   return (
     <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar, closeSidebar }}>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <View style={styles.content}>{children}</View>
 
         {isSidebarOpen && (
@@ -65,7 +66,7 @@ const AdminLayout = ({ children }) => {
         >
           <Sidebar onClose={closeSidebar} />
         </Animated.View>
-      </View>
+      </SafeAreaView>
     </SidebarContext.Provider>
   );
 };

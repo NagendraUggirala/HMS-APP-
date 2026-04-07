@@ -1,5 +1,4 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AdminLayout, { useSidebar } from "./AdminLayout";
 
@@ -13,7 +12,7 @@ const InpatientContent = () => {
   const { toggleSidebar } = useSidebar();
   
   return (
-    <SafeAreaView className="flex-1 bg-[#F8FAFC]">
+    <View className="flex-1 bg-[#F8FAFC]">
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
         <View className="flex-row items-center">
           <TouchableOpacity onPress={toggleSidebar} className="mr-4 h-11 w-11 items-center justify-center rounded-2xl bg-blue-50">
@@ -49,7 +48,7 @@ const InpatientContent = () => {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
