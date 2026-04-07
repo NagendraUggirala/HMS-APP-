@@ -26,6 +26,7 @@ import MyProfile from "../screens/Doctor/MyProfile";
 import AdminSidebarScreen from "../screens/Admin/AdminsidebarScreen";
 import DashboardOverview from "../screens/Admin/DashboardScreen";
 import HospitalProfile from "../screens/Admin/HospitalScreen";
+import AdminProfile from "../screens/Admin/ProfileScreen";
 import DoctorManagement from "../screens/Admin/DocterScreen";
 import StaffManagement from "../screens/Admin/StaffScreen";
 import DepartmentManagement from "../screens/Admin/DepartmentsScreen";
@@ -37,6 +38,10 @@ import PharmacyManagement from "../screens/Admin/PharmacyScreen";
 import LabManagement from "../screens/Admin/LabScreen";
 import ReportsManagement from "../screens/Admin/ReportsScreen";
 import SettingsManagement from "../screens/Admin/SettingsScreen";
+import RaiseTicketScreen from "../screens/Admin/RaiseTicketScreen";
+import AuditLogsScreen from "../screens/Admin/AuditLogsScreen";
+import NotificationScreen from "../screens/Admin/NotificationScreen";
+import NotificationDetailsScreen from "../screens/Admin/NotificationDetailsScreen";
 
 
 import { useTheme } from "../context/ThemeContext";
@@ -78,6 +83,7 @@ export default function AppNavigator() {
         <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
         <Stack.Screen name="DashboardOverview" component={DashboardOverview} options={{ headerShown: false }} />
         <Stack.Screen name="HospitalProfile" component={HospitalProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="AdminProfile" component={AdminProfile} options={{ headerShown: false }} />
         <Stack.Screen name="DoctorManagement" component={DoctorManagement} options={{ headerShown: false }} />
         <Stack.Screen name="StaffManagement" component={StaffManagement} options={{ headerShown: false }} />
         <Stack.Screen name="DepartmentManagement" component={DepartmentManagement} options={{ headerShown: false }} />
@@ -89,6 +95,10 @@ export default function AppNavigator() {
         <Stack.Screen name="LabManagement" component={LabManagement} options={{ headerShown: false }} />
         <Stack.Screen name="ReportsManagement" component={ReportsManagement} options={{ headerShown: false }} />
         <Stack.Screen name="SettingsManagement" component={SettingsManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="RaiseTicket" component={RaiseTicketScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="AuditLogs" component={AuditLogsScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Notification" component={NotificationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="NotificationDetails" component={NotificationDetailsScreen} options={{ headerShown: false }} />
 
 
         {/* Doctor Dashboard & Management */}
