@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
@@ -61,6 +61,7 @@ const Sidebar = ({ onClose }) => {
     { id: 'staff', label: 'Staff Management', icon: 'people-outline', screen: 'StaffManagement' },
     { id: 'departments', label: 'Departments', icon: 'layers-outline', screen: 'DepartmentManagement' },
     { id: 'appointments', label: 'Appointments', icon: 'calendar-outline', screen: 'AppointmentManagement' },
+    { id: 'inpatient', label: 'Inpatient Tracking', icon: 'bed-outline', screen: 'InpatientManagement' },
     { id: 'billing', label: 'Billing & Finance', icon: 'card-outline', screen: 'BillingManagement' },
     { id: 'pharmacy', label: 'Pharmacy', icon: 'bandage-outline', screen: 'PharmacyManagement' },
     { id: 'lab', label: 'LAB & Diagnostics', icon: 'flask-outline', screen: 'LabManagement' },

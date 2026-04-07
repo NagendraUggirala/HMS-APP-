@@ -7,7 +7,6 @@ import {
   TextInput,
   Modal,
   ScrollView,
-  SafeAreaView,
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -99,7 +98,7 @@ const AssignDepartmentsContent = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8FAFC]">
+    <View className="flex-1 bg-[#F8FAFC]">
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
         <View className="flex-row items-center">
@@ -189,7 +188,7 @@ const AssignDepartmentsContent = () => {
             </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

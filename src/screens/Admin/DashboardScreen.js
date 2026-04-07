@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+
 import {
   Ionicons,
   MaterialCommunityIcons,
@@ -139,7 +139,8 @@ const DashboardContent = ({ navigation }) => {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8FAFC]">
+    
+    <View className="flex-1 ">
 
       {/* Header with Sidebar Trigger */}
       <View className="flex-row items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
@@ -328,7 +329,8 @@ const DashboardContent = ({ navigation }) => {
           <Text className="mt-1 text-[10px] font-semibold text-gray-400 uppercase">Settings</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
+   
   );
 };
 
