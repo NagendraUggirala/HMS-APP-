@@ -9,8 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useAppContext } from "../../context/AppContext";
-import DoctorSidebar from "./DoctorSidebar";
+import NurseSidebar from "./NurseSidebar";
 
 const { width } = Dimensions.get("window");
 const SidebarContext = createContext();
@@ -23,10 +22,9 @@ export const useSidebar = () => {
   return context;
 };
 
-const DoctorLayout = ({ children }) => {
+const NurseLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-280)).current; 
-  const { currentUser } = useAppContext();
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -58,13 +56,8 @@ const DoctorLayout = ({ children }) => {
             </View>
           </View>
           <View className="flex-row items-center">
-            <TouchableOpacity className="h-8 w-8 items-center justify-center rounded-xl bg-gray-50 mr-3">
-              <Ionicons name="notifications-outline" size={18} color="#64748b" />
-            </TouchableOpacity>
             <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-blue-600">
-              <Text className="text-white font-bold text-xs">
-                {currentUser?.name?.substring(0, 2).toUpperCase() || "DR"}
-              </Text>
+              <Text className="text-white font-bold text-xs">LN</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -85,7 +78,7 @@ const DoctorLayout = ({ children }) => {
             { transform: [{ translateX: slideAnim }] },
           ]}
         >
-          <DoctorSidebar onClose={closeSidebar} />
+          <NurseSidebar onClose={closeSidebar} />
         </Animated.View>
       </SafeAreaView>
     </SidebarContext.Provider>
@@ -121,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DoctorLayout;
+export default NurseLayout;

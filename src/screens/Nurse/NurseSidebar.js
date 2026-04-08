@@ -4,11 +4,14 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const SidebarItem = ({ label, icon, isActive, onPress }) => (
   <TouchableOpacity
@@ -33,22 +36,23 @@ const SidebarItem = ({ label, icon, isActive, onPress }) => (
   </TouchableOpacity>
 );
 
-const DoctorSidebar = ({ onClose }) => {
+const NurseSidebar = ({ onClose }) => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { logout } = useAppContext();
+  const { logout, currentUser } = useAppContext();
 
   const activeRoute = route.name;
 
-  const doctorMenu = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'grid-outline', screen: 'DoctorDashboard' },
-    { id: 'appointments', label: 'Appointments', icon: 'calendar-outline', screen: 'DoctorAppointments' },
-    { id: 'records', label: 'Patient Records', icon: 'people-outline', screen: 'PatientRecords' },
-    { id: 'prescriptions', label: 'Prescriptions', icon: 'medical-outline', screen: 'PrescriptionManagement' },
-    { id: 'lab', label: 'Lab Results', icon: 'flask-outline', screen: 'LabResults' },
-    { id: 'inpatient', label: 'Inpatient Visits', icon: 'bed-outline', screen: 'InpatientVisits' },
-    { id: 'messaging', label: 'Messaging', icon: 'chatbubble-ellipses-outline', screen: 'DoctorMessaging' },
-    { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'DoctorProfile' },
+  const nurseMenu = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'grid-outline', screen: 'NurseDashboard' },
+    { id: 'patients', label: 'Assigned Patients', icon: 'people-outline', screen: 'AssignedPatients' },
+    { id: 'vitals', label: 'Vitals Monitoring', icon: 'pulse-outline', screen: 'VitalsMonitoring' },
+    { id: 'medication', label: 'Medication Schedule', icon: 'medkit-outline', screen: 'MedicationSchedule' },
+    { id: 'beds', label: 'Bed Management', icon: 'bed-outline', screen: 'BedManagement' },
+    { id: 'lab', label: 'Lab Tests & Upload', icon: 'flask-outline', screen: 'LabTestsUpload' },
+    { id: 'notes', label: 'Nursing Notes', icon: 'document-text-outline', screen: 'NursingNotes' },
+    { id: 'discharge', label: 'Discharge Summary', icon: 'exit-outline', screen: 'DischargeSummary' },
+    { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'NurseProfile' },
   ];
 
   const handlePress = (screen) => {
@@ -71,7 +75,7 @@ const DoctorSidebar = ({ onClose }) => {
       <View className="flex-1">
         {/* Sidebar Header */}
         <View className="px-6 py-6 border-b border-gray-50 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-gray-800">Doctor Dashboard</Text>
+          <Text className="text-lg font-bold text-gray-800">Nurse Dashboard</Text>
           <TouchableOpacity onPress={onClose}>
             <Ionicons name="close" size={24} color="#64748b" />
           </TouchableOpacity>
@@ -83,7 +87,7 @@ const DoctorSidebar = ({ onClose }) => {
           className="mt-4"
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          {doctorMenu.map((item) => (
+          {nurseMenu.map((item) => (
             <SidebarItem
               key={item.id}
               label={item.label}
@@ -109,4 +113,4 @@ const DoctorSidebar = ({ onClose }) => {
   );
 };
 
-export default DoctorSidebar;
+export default NurseSidebar;

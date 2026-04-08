@@ -8,6 +8,14 @@ import LoginScreen from "../screens/LoginScreen";
 import ForgetScreen from "../screens/ForgetScreen";
 import DoctorDashboardScreen from "../screens/Doctor/DoctorDashboardScreen";
 import NurseDashboardScreen from "../screens/Nurse/NurseDashboardScreen";
+import AssignedPatients from "../screens/Nurse/AssignedPatient";
+import VitalsMonitoringScreen from "../screens/Nurse/VitalsMonitoringScreen";
+import MedicationScreen from "../screens/Nurse/MedicationScreen";
+import BedManagmentScreen from "../screens/Nurse/BedManagmentScreen";
+import LabTestsUpload from "../screens/Nurse/LabTestsUpload";
+import NursingNotes from "../screens/Nurse/NursingNotes";
+import DischargeScreen from "../screens/Nurse/DischargeScreen";
+import MyProfileScreen from "../screens/Nurse/MyProfileScreen";
 import LabTechnicianDashboardScreen from "../screens/LabTechnician/LabTechnicianDashboardScreen";
 import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
 import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
@@ -112,7 +120,16 @@ export default function AppNavigator() {
         <Stack.Screen name="DoctorProfile" component={MyProfile} options={{ headerShown: false }} />
 
         {/* General User Dashboards */}
-        <Stack.Screen name="NurseDashboard" component={NurseDashboardScreen} options={{ title: "Nurse Dashboard" }} />
+        {/* Nurse Dashboard & Management */}
+        <Stack.Screen name="NurseDashboard" component={NurseDashboardScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="AssignedPatients" component={AssignedPatients} options={{ headerShown: false }} />
+        <Stack.Screen name="VitalsMonitoring" component={VitalsMonitoringScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MedicationSchedule" component={MedicationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="BedManagement" component={BedManagmentScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="LabTestsUpload" component={LabTestsUpload} options={{ headerShown: false }} />
+        <Stack.Screen name="NursingNotes" component={NursingNotes} options={{ headerShown: false }} />
+        <Stack.Screen name="DischargeSummary" component={DischargeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="NurseProfile" component={MyProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="LabTechnicianDashboard" component={LabTechnicianDashboardScreen} options={{ title: "Lab Technician Dashboard" }} />
         <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ title: "Receptionist Dashboard" }} />
         <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
