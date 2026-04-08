@@ -213,9 +213,10 @@ const StaffContent = () => {
     const key = `status-${staffItem.id}`;
     setActionLoading((p) => ({ ...p, [key]: true }));
     try {
+      const resolvedHeaders = await api.getHeaders();
       const response = await fetch(`${api.baseURL}${staffStatusUrl(staffItem.id)}`, {
         method: "PATCH",
-        headers: api.getHeaders(),
+        headers: resolvedHeaders,
         body: JSON.stringify({ is_active: nextValue }),
       });
       if (!response.ok) {
@@ -241,9 +242,10 @@ const StaffContent = () => {
           const key = `reset-${staffItem.id}`;
           setActionLoading((p) => ({ ...p, [key]: true }));
           try {
+            const resolvedHeaders = await api.getHeaders();
             const response = await fetch(`${api.baseURL}${staffResetPasswordUrl(staffItem.id)}`, {
               method: "POST",
-              headers: api.getHeaders(),
+              headers: resolvedHeaders,
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(data?.message || "Failed to reset password");
