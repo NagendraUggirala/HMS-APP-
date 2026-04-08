@@ -621,14 +621,14 @@ const DocterScreen = () => (
 
 const styles = StyleSheet.create({
   statCard: {
-    width: (width - 32 - 12) / 2,
+    width: width > 1024 ? "23%" : width > 768 ? "48%" : "48%",
     marginBottom: 12,
   },
   doctorCard: {
     // full width on narrow screens
   },
   cardWrapper: {
-    width: (width - 32 - 12) / 2,
+    width: width > 1000 ? "32%" : width > 700 ? "48%" : "100%",
   },
   avatar: {
     width: 64,

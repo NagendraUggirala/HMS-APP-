@@ -63,6 +63,9 @@ const AdminLayout = ({ children }) => {
               ],
             },
           ]}
+          pointerEvents={isSidebarOpen ? 'auto' : 'none'}
+          accessibilityElementsHidden={!isSidebarOpen}
+          importantForAccessibility={isSidebarOpen ? 'yes' : 'no-hide-descendants'}
         >
           <Sidebar onClose={closeSidebar} />
         </Animated.View>

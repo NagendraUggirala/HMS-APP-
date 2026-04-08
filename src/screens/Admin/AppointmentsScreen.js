@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Modal, ActivityIndicator, Alert, Dimensions, Platform } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import AdminLayout, { useSidebar } from './AdminLayout';
+import { api } from '../../services/api';
 
 const { width } = Dimensions.get('window');
 
@@ -25,20 +26,36 @@ const AppointmentsContent = () => {
   const PRIORITIES = ['Normal', 'Urgent', 'Emergency'];
   const TIME_SLOTS = ['09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM', '05:00 PM', '05:30 PM'];
 
-  useEffect(() => { loadAppointments() }, []);
+  // API Endpoint
+  const APPOINTMENTS_URL = "/api/v1/hospital-admin/appointments";
+
+  useEffect(() => { loadAppointments() }, [statusFilter]);
 
   const loadAppointments = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setAppointments([
-        { id: 'APT-3001', patient: 'Ravi Kumar', doctor: 'Dr. Meena Rao', dateTime: '2023-10-15 10:30 AM', status: 'Confirmed', reason: 'Fever', type: 'Consultation', priority: 'Normal', notes: '' },
-        { id: 'APT-3002', patient: 'Anita Sharma', doctor: 'Dr. Sharma', dateTime: '2023-10-15 11:00 AM', status: 'Pending', reason: 'Back Pain', type: 'Consultation', priority: 'Normal', notes: '' },
-        { id: 'APT-3003', patient: 'Suresh Patel', doctor: 'Dr. Menon', dateTime: '2023-10-15 11:30 AM', status: 'Confirmed', reason: 'Routine Checkup', type: 'Routine Checkup', priority: 'Normal', notes: '' },
-        { id: 'APT-3004', patient: 'Priya Singh', doctor: 'Dr. Desai', dateTime: '2023-10-15 12:00 PM', status: 'Confirmed', reason: 'Migraine', type: 'Consultation', priority: 'Urgent', notes: 'Severe headache' },
-        { id: 'APT-3005', patient: 'Rajesh Kumar', doctor: 'Dr. Iyer', dateTime: '2023-10-15 02:00 PM', status: 'Pending', reason: 'Diabetes Review', type: 'Follow-up', priority: 'Normal', notes: '' }
-      ]);
+    try {
+      const url = `${APPOINTMENTS_URL}?page=1&limit=100${statusFilter && statusFilter !== 'All' ? `&status=${statusFilter}` : ''}`;
+      const data = await api.get(url);
+      const items = data?.data?.items || data?.items || data || [];
+      const formattedItems = (Array.isArray(items) ? items : []).map(apt => ({
+        id: apt.id || apt.appointment_id || '',
+        patient: apt.patient_name || apt.patient || 'Unknown Patient',
+        doctor: apt.doctor_name || apt.doctor || 'Unknown Doctor',
+        dateTime: apt.appointment_datetime || apt.dateTime || apt.date || '',
+        status: apt.status || 'Pending',
+        reason: apt.reason_for_visit || apt.reason || '',
+        type: apt.appointment_type || apt.type || 'Consultation',
+        priority: apt.priority || 'Normal',
+        notes: apt.notes || ''
+      }));
+      setAppointments(formattedItems);
+    } catch (error) {
+      console.warn("Failed to load appointments:", error);
+      Alert.alert("Error", error?.message || "Failed to load appointments");
+      setAppointments([]);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   // Modal handlers
@@ -71,39 +88,66 @@ const AppointmentsContent = () => {
   };
 
   // Core functions
-  const handleScheduleAppointment = () => {
+  const handleScheduleAppointment = async () => {
     if (!validateForm()) return;
-    const appointment = {
-      id: `APT-${Math.floor(3000 + Math.random() * 9000)}`,
-      ...formData,
-      dateTime: `${formData.date} ${formData.time}`,
-      status: 'Pending'
-    };
-    setAppointments(prev => [appointment, ...prev]);
-    closeModal('add');
-  };
-
-  const handleUpdateAppointment = () => {
-    if (!validateForm()) return;
-    setAppointments(prev => prev.map(apt =>
-      apt.id === currentAppointment.id ? {
-        ...apt,
+    try {
+      const payload = {
         ...formData,
-        dateTime: `${formData.date} ${formData.time}`
-      } : apt
-    ));
-    closeModal('edit');
+        appointment_datetime: `${formData.date}T${formData.time.replace(/ AM| PM/, ':00')}`,
+        status: 'Pending'
+      };
+      await api.post(APPOINTMENTS_URL, payload);
+      closeModal('add');
+      loadAppointments();
+    } catch (error) {
+      Alert.alert("Error", error?.message || "Failed to schedule appointment");
+    }
   };
 
-  const handleDeleteAppointment = () => {
-    setAppointments(prev => prev.filter(apt => apt.id !== currentAppointment.id));
-    closeModal('delete');
+  const handleUpdateAppointment = async () => {
+    if (!validateForm() || !currentAppointment?.id) return;
+    try {
+      const payload = {
+        ...formData,
+        appointment_datetime: `${formData.date}T${formData.time.replace(/ AM| PM/, ':00')}`,
+      };
+      await api.put(`${APPOINTMENTS_URL}/${currentAppointment.id}`, payload);
+      closeModal('edit');
+      loadAppointments();
+    } catch (error) {
+      Alert.alert("Error", error?.message || "Failed to update appointment");
+    }
   };
 
-  const handleStatusChange = (appointmentId, newStatus) => {
-    setAppointments(prev => prev.map(apt =>
-      apt.id === appointmentId ? { ...apt, status: newStatus } : apt
-    ));
+  const handleDeleteAppointment = async () => {
+    if (!currentAppointment?.id) return;
+    try {
+      const resolvedHeaders = await api.getHeaders();
+      const response = await fetch(`${api.baseURL}${APPOINTMENTS_URL}/${currentAppointment.id}`, {
+        method: "DELETE",
+        headers: resolvedHeaders,
+      });
+      if (!response.ok) throw new Error("Failed to delete appointment");
+      closeModal('delete');
+      loadAppointments();
+    } catch (error) {
+      Alert.alert("Error", error?.message || "Failed to cancel appointment");
+    }
+  };
+
+  const handleStatusChange = async (appointmentId, newStatus) => {
+    try {
+      const resolvedHeaders = await api.getHeaders();
+      const response = await fetch(`${api.baseURL}${APPOINTMENTS_URL}/${appointmentId}/status`, {
+        method: "PATCH",
+        headers: resolvedHeaders,
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) throw new Error("Failed to update status");
+      loadAppointments();
+    } catch (error) {
+      Alert.alert("Error", error?.message || "Failed to update status");
+    }
   };
 
   const resetForm = () => {

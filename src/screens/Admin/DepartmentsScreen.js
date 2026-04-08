@@ -8,6 +8,7 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+
   Switch,
   Dimensions,
   StyleSheet,
@@ -178,6 +179,10 @@ const DepartmentsContent = () => {
   const [listError, setListError] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState({});
+  const [doctors, setDoctors] = useState([]);
+  const [doctorsLoading, setDoctorsLoading] = useState(false);
+  const [selectDoctorModal, setSelectDoctorModal] = useState(false);
+  const [doctorSearch, setDoctorSearch] = useState("");
 
   // Modal states
   const [modalState, setModalState] = useState({ add: false, edit: false });
@@ -202,7 +207,36 @@ const DepartmentsContent = () => {
     }
   };
 
-  useEffect(() => { fetchDepartments(); }, [activeOnly]);
+  const fetchDoctors = async () => {
+    setDoctorsLoading(true);
+    try {
+      const data = await api.get("/api/v1/hospital-admin/staff?role=DOCTOR&page=1&limit=100");
+      const items = data?.data?.items || data?.items || data?.data || data || [];
+      if (Array.isArray(items)) {
+        setDoctors(items.map(d => ({
+          id: d.id || d.staff_id || d.user_id || "",
+          name: d.name || `${d.first_name || ""} ${d.last_name || ""}`.trim() || "Unknown Doctor",
+          specialization: d.doctor_specialization || d.specialization || d.department || ""
+        })));
+      }
+    } catch (error) {
+      console.warn("Failed to fetch doctors:", error);
+      // Fallback for demo if API fails
+      setDoctors([
+        { id: "DOC-1001", name: "Dr. Meena Rao", specialization: "Cardiology" },
+        { id: "DOC-1002", name: "Dr. Vivek Sharma", specialization: "Orthopedics" },
+        { id: "DOC-1003", name: "Dr. Rajesh Menon", specialization: "Neurology" },
+        { id: "DOC-1004", name: "Dr. Anjali Desai", specialization: "Pediatrics" },
+      ]);
+    } finally {
+      setDoctorsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+    fetchDoctors();
+  }, [activeOnly]);
 
   const onRefresh = () => { setRefreshing(true); fetchDepartments(true); };
 
@@ -298,9 +332,10 @@ const DepartmentsContent = () => {
     setActionLoading((p) => ({ ...p, [key]: true }));
     try {
       // api service doesn't have patch, use put with status endpoint
+      const resolvedHeaders = await api.getHeaders();
       const response = await fetch(`${api.baseURL}${departmentStatusUrl(dept.id)}`, {
         method: "PATCH",
-        headers: api.getHeaders(),
+        headers: resolvedHeaders,
         body: JSON.stringify({ is_active: !dept.is_active }),
       });
       if (!response.ok) {
@@ -350,7 +385,24 @@ const DepartmentsContent = () => {
       <View className="flex-row flex-wrap" style={{ gap: 0 }}>
         <FormInput label="Department Name *" value={formData.name} onChangeText={set("name")} placeholder="e.g., Cardiology" icon="business-outline" iconColor="#3b82f6" error={fieldErrors.name} />
         <FormInput label="Department Code *" value={formData.code} onChangeText={set("code")} placeholder="e.g., CARD" icon="pricetag-outline" iconColor="#6366f1" error={fieldErrors.code} />
-        <FormInput label="Head of Department *" value={formData.head_of_department} onChangeText={set("head_of_department")} placeholder="Doctor UUID or name" icon="person-outline" iconColor="#8b5cf6" error={fieldErrors.head_of_department} />
+
+        {/* Head of Department Picker */}
+        <View className="mb-4 w-full">
+          <Text className="text-sm font-medium text-gray-700 mb-2">Head of Department *</Text>
+          <TouchableOpacity
+            onPress={() => setSelectDoctorModal(true)}
+            className="flex-row items-center border rounded-xl bg-white px-3 py-3"
+            style={{ borderColor: fieldErrors.head_of_department ? "#f87171" : "#d1d5db" }}
+          >
+            <Ionicons name="person-outline" size={16} color="#8b5cf6" style={{ marginRight: 8 }} />
+            <Text className={`flex-1 text-sm ${formData.head_of_department ? "text-slate-800" : "text-gray-400"}`}>
+              {formData.head_of_department || "Select Lead Doctor"}
+            </Text>
+            <Ionicons name="chevron-down" size={16} color="#9ca3af" />
+          </TouchableOpacity>
+          {fieldErrors.head_of_department ? <Text className="text-xs text-red-600 mt-1">{fieldErrors.head_of_department}</Text> : null}
+        </View>
+
         <FormInput label="Location *" value={formData.location} onChangeText={set("location")} placeholder="Floor 2, Wing A" icon="location-outline" iconColor="#f59e0b" error={fieldErrors.location} />
         <FormInput label="Phone *" value={formData.phone} onChangeText={set("phone")} placeholder="+91 98765 43210" keyboardType="phone-pad" icon="call-outline" iconColor="#10b981" error={fieldErrors.phone} />
         <FormInput label="Email *" value={formData.email} onChangeText={set("email")} placeholder="dept@hospital.com" keyboardType="email-address" icon="mail-outline" iconColor="#ec4899" error={fieldErrors.email} />
@@ -591,6 +643,65 @@ const DepartmentsContent = () => {
             </TouchableOpacity>
           </View>
         </View>
+      </Modal>
+      {/* ══════════ DOCTOR SELECTION MODAL ══════════ */}
+      <Modal visible={selectDoctorModal} animationType="fade" transparent>
+        <TouchableOpacity
+          className="flex-1 bg-black/50 justify-center items-center p-6"
+          activeOpacity={1}
+          onPress={() => setSelectDoctorModal(false)}
+        >
+          <View className="bg-white rounded-[32px] w-full max-h-[80%] overflow-hidden shadow-2xl">
+            <View className="p-6 border-b border-gray-100 flex-row items-center justify-between">
+              <Text className="text-lg font-black text-slate-800">Select Department Head</Text>
+              <TouchableOpacity onPress={() => setSelectDoctorModal(false)}>
+                <Ionicons name="close" size={24} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="p-4 bg-slate-50 border-b border-gray-100">
+              <View className="flex-row items-center bg-white border border-gray-200 rounded-xl px-3 py-2">
+                <Ionicons name="search" size={16} color="#94a3b8" />
+                <TextInput
+                  placeholder="Search doctors..."
+                  value={doctorSearch}
+                  onChangeText={setDoctorSearch}
+                  className="flex-1 ml-2 text-sm text-slate-800"
+                />
+              </View>
+            </View>
+
+            <ScrollView className="p-4">
+              {doctorsLoading ? (
+                <ActivityIndicator size="small" color="#3b82f6" className="my-10" />
+              ) : (
+                doctors
+                  .filter(d => d.name.toLowerCase().includes(doctorSearch.toLowerCase()))
+                  .map(doc => (
+                    <TouchableOpacity
+                      key={doc.id}
+                      onPress={() => {
+                        set("head_of_department")(doc.name); // Storing name for display
+                        setSelectDoctorModal(false);
+                      }}
+                      className="flex-row items-center p-4 mb-2 rounded-2xl bg-slate-50 border border-slate-100"
+                    >
+                      <View className="h-10 w-10 rounded-full bg-blue-100 items-center justify-center mr-4">
+                        <Ionicons name="person" size={20} color="#3b82f6" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className="font-bold text-slate-800">{doc.name}</Text>
+                        <Text className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">{doc.specialization}</Text>
+                      </View>
+                      {formData.head_of_department === doc.name && (
+                        <Ionicons name="checkmark-circle" size={24} color="#10b981" />
+                      )}
+                    </TouchableOpacity>
+                  ))
+              )}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
