@@ -4,84 +4,80 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import DoctorLayout, { useSidebar } from "./DoctorLayout";
+import DoctorLayout from "./DoctorLayout";
 
 const PatientRecordCard = ({ name, age, gender, bloodType, lastVisit }) => (
-  <TouchableOpacity style={styles.card}>
-    <View style={styles.cardHeader}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>{name.split(' ').map(n=>n[0]).join('')}</Text>
+  <TouchableOpacity className="bg-white rounded-3xl p-4 mb-3 shadow-sm">
+    <View className="flex-row items-center mb-4">
+      <View className="width-12 h-12 rounded-full bg-blue-50 items-center justify-center mr-4">
+        <Text className="text-blue-600 font-bold text-sm">
+          {name.split(' ').map(n => n[0]).join('')}
+        </Text>
       </View>
-      <View style={styles.headerInfo}>
-        <Text style={styles.patientName}>{name}</Text>
-        <Text style={styles.patientMeta}>{age} yrs • {gender} • {bloodType}</Text>
+      <View className="flex-1">
+        <Text className="text-base font-bold text-gray-900">{name}</Text>
+        <Text className="text-xs text-gray-500 font-medium">
+          {age} yrs • {gender} • {bloodType}
+        </Text>
       </View>
-      <Ionicons name="chevron-forward" size={20} color="#cbd5e1" />
+      <Ionicons name="chevron-forward" size={18} color="#cbd5e1" />
     </View>
-    <View style={styles.cardFooter}>
-      <Text style={styles.lastVisitLabel}>Last Visit:</Text>
-      <Text style={styles.lastVisitValue}>{lastVisit}</Text>
+    <View className="flex-row items-center pt-4 border-t border-gray-50">
+      <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mr-2">Last Visit:</Text>
+      <Text className="text-xs text-gray-600 font-bold">{lastVisit}</Text>
     </View>
   </TouchableOpacity>
 );
 
 const PatientRecordsContent = () => {
-  const { toggleSidebar } = useSidebar();
-
   const patients = [
     { id: 1, name: "Alice Johnson", age: 28, gender: "Female", bloodType: "O+", lastVisit: "Oct 10, 2023" },
     { id: 2, name: "Bob Smith", age: 45, gender: "Male", bloodType: "A-", lastVisit: "Sep 25, 2023" },
     { id: 3, name: "Charlie Brown", age: 10, gender: "Male", bloodType: "B+", lastVisit: "Oct 12, 2023" },
     { id: 4, name: "Diana Prince", age: 32, gender: "Female", bloodType: "AB+", lastVisit: "Oct 05, 2023" },
     { id: 5, name: "Ethan Hunt", age: 50, gender: "Male", bloodType: "O-", lastVisit: "Aug 30, 2023" },
+    { id: 6, name: "Sarah Connor", age: 38, gender: "Female", bloodType: "O+", lastVisit: "Oct 15, 2023" },
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleSidebar} style={styles.menuButton}>
-          <Ionicons name="menu-outline" size={24} color="#2563eb" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Patient Records</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="options-outline" size={22} color="#64748b" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search-outline" size={18} color="#94a3b8" />
+    <View className="flex-1">
+      <View className="bg-white px-6 pb-6 pt-2 border-b border-gray-100">
+        <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-2xl font-black text-gray-900">Patient Records</Text>
+            <TouchableOpacity><Ionicons name="filter" size={20} color="#64748b" /></TouchableOpacity>
+        </View>
+        <View className="flex-row items-center bg-gray-50 rounded-2xl px-4 py-3 border border-gray-100">
+          <Ionicons name="search" size={18} color="#94a3b8" />
           <TextInput 
-            placeholder="Search by name, ID or phone..." 
-            style={styles.searchInput} 
+            placeholder="Search patients..." 
+            className="flex-1 ml-3 text-sm text-gray-900" 
             placeholderTextColor="#94a3b8" 
           />
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryBox}>
-            <Text style={styles.summaryNumber}>1,248</Text>
-            <Text style={styles.summaryLabel}>Total Records</Text>
+      <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
+        <View className="flex-row gap-3 mb-6">
+          <View className="flex-1 bg-white p-4 rounded-3xl shadow-sm border border-gray-50">
+            <Text className="text-2xl font-black text-gray-900">1,248</Text>
+            <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total Records</Text>
           </View>
-          <View style={[styles.summaryBox, { backgroundColor: '#eff6ff' }]}>
-            <Text style={[styles.summaryNumber, { color: '#2563eb' }]}>42</Text>
-            <Text style={styles.summaryLabel}>New this month</Text>
+          <View className="flex-1 bg-blue-600 p-4 rounded-3xl shadow-lg shadow-blue-200">
+            <Text className="text-2xl font-black text-white">42</Text>
+            <Text className="text-[10px] text-white/70 font-bold uppercase tracking-wider">New This Month</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Recently Accessed</Text>
+        <Text className="text-gray-400 text-[10px] font-bold uppercase tracking-wider mb-4">Recently Accessed</Text>
         {patients.map(patient => (
           <PatientRecordCard key={patient.id} {...patient} />
         ))}
         
-        <TouchableOpacity style={styles.loadMoreButton}>
-          <Text style={styles.loadMoreText}>View All Records</Text>
+        <TouchableOpacity className="py-6 items-center">
+          <Text className="text-sm font-bold text-blue-600">View All Records</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -95,155 +91,3 @@ export default function PatientRecordsScree() {
     </DoctorLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: "#fff",
-  },
-  menuButton: {
-    padding: 8,
-    borderRadius: 10,
-    backgroundColor: "#eff6ff",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  filterButton: {
-    padding: 8,
-  },
-  searchContainer: {
-    padding: 20,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f8fafc",
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 12,
-    fontSize: 14,
-    color: "#1e293b",
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  summaryContainer: {
-    flexDirection: "row",
-    gap: 15,
-    marginBottom: 25,
-  },
-  summaryBox: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  summaryNumber: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#1e293b",
-  },
-  summaryLabel: {
-    fontSize: 11,
-    color: "#64748b",
-    fontWeight: "600",
-    marginTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#475569",
-    marginBottom: 15,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "#f1f5f9",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#475569",
-  },
-  headerInfo: {
-    flex: 1,
-  },
-  patientName: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 2,
-  },
-  patientMeta: {
-    fontSize: 12,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: "#f8fafc",
-  },
-  lastVisitLabel: {
-    fontSize: 11,
-    color: "#94a3b8",
-    marginRight: 6,
-  },
-  lastVisitValue: {
-    fontSize: 11,
-    color: "#475569",
-    fontWeight: "600",
-  },
-  loadMoreButton: {
-    paddingVertical: 15,
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  loadMoreText: {
-    fontSize: 14,
-    color: "#2563eb",
-    fontWeight: "700",
-  },
-});

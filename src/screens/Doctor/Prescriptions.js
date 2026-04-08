@@ -4,59 +4,57 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
+  TextInput,
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import DoctorLayout, { useSidebar } from "./DoctorLayout";
+import DoctorLayout from "./DoctorLayout";
 
 const PrescriptionItem = ({ patientName, medicine, dosage, duration, date, active }) => (
-  <View style={styles.card}>
-    <View style={styles.cardHeader}>
-      <View style={styles.medicIcon}>
-        <MaterialCommunityIcons name="pill" size={20} color="#2563eb" />
+  <View className="bg-white rounded-3xl p-4 mb-4 shadow-sm">
+    <View className="flex-row items-center mb-4">
+      <View className="width-12 h-12 rounded-2xl bg-blue-50 items-center justify-center mr-4">
+        <MaterialCommunityIcons name="pill" size={24} color="#2563eb" />
       </View>
-      <View style={styles.mainInfo}>
-        <Text style={styles.medicineName}>{medicine}</Text>
-        <Text style={styles.patientName}>{patientName}</Text>
+      <View className="flex-1">
+        <Text className="text-base font-bold text-gray-900">{medicine}</Text>
+        <Text className="text-xs text-gray-500 font-medium">{patientName}</Text>
       </View>
-      <View style={[styles.activeBadge, active ? styles.activeBg : styles.inactiveBg]}>
-        <Text style={[styles.activeText, active ? styles.activeColor : styles.inactiveColor]}>
+      <View className={`px-2 py-1 rounded-md ${active ? 'bg-emerald-50' : 'bg-gray-100'}`}>
+        <Text className={`text-[9px] font-black uppercase ${active ? 'text-emerald-600' : 'text-gray-400'}`}>
           {active ? 'Active' : 'Completed'}
         </Text>
       </View>
     </View>
 
-    <View style={styles.metaRow}>
-      <View style={styles.metaItem}>
+    <View className="flex-row justify-between py-3 border-t border-b border-gray-50 mb-4">
+      <View className="flex-row items-center">
         <Ionicons name="time-outline" size={14} color="#94a3b8" />
-        <Text style={styles.metaText}>{dosage}</Text>
+        <Text className="text-[10px] text-gray-500 font-bold ml-1 uppercase">{dosage}</Text>
       </View>
-      <View style={styles.metaItem}>
+      <View className="flex-row items-center">
         <Ionicons name="calendar-outline" size={14} color="#94a3b8" />
-        <Text style={styles.metaText}>{duration}</Text>
+        <Text className="text-[10px] text-gray-500 font-bold ml-1 uppercase">{duration}</Text>
       </View>
-      <View style={styles.metaItem}>
+      <View className="flex-row items-center">
         <Ionicons name="document-text-outline" size={14} color="#94a3b8" />
-        <Text style={styles.metaText}>{date}</Text>
+        <Text className="text-[10px] text-gray-400 font-bold ml-1 uppercase">{date}</Text>
       </View>
     </View>
 
-    <View style={styles.actions}>
-      <TouchableOpacity style={styles.actionBtn}>
-        <Ionicons name="repeat-outline" size={18} color="#64748b" />
-        <Text style={styles.actionBtnText}>Renewal</Text>
+    <View className="flex-row gap-3">
+      <TouchableOpacity className="flex-1 py-3 rounded-xl bg-gray-50 flex-row items-center justify-center">
+        <Ionicons name="repeat-outline" size={16} color="#64748b" />
+        <Text className="text-xs font-bold text-gray-500 ml-2">Renew</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.actionBtn, styles.editBtn]}>
-        <Ionicons name="create-outline" size={18} color="#2563eb" />
-        <Text style={[styles.actionBtnText, { color: '#2563eb' }]}>Edit</Text>
+      <TouchableOpacity className="flex-1 py-3 rounded-xl bg-blue-50 flex-row items-center justify-center">
+        <Ionicons name="create-outline" size={16} color="#2563eb" />
+        <Text className="text-xs font-bold text-blue-600 ml-2">Edit</Text>
       </TouchableOpacity>
     </View>
   </View>
 );
 
 const PrescriptionsContent = () => {
-  const { toggleSidebar } = useSidebar();
-
   const prescriptions = [
     { id: 1, patientName: "Sarah Connor", medicine: "Amlodipine 5mg", dosage: "Once daily", duration: "30 Days", date: "Oct 12, 2023", active: true },
     { id: 2, patientName: "John Smith", medicine: "Amoxicillin 500mg", dosage: "Three times daily", duration: "7 Days", date: "Oct 14, 2023", active: true },
@@ -65,32 +63,33 @@ const PrescriptionsContent = () => {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleSidebar} style={styles.menuButton}>
-          <Ionicons name="menu-outline" size={24} color="#2563eb" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Prescriptions</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Ionicons name="add" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search-outline" size={18} color="#94a3b8" />
-          <Text style={styles.searchPlaceholder}>Search prescriptions...</Text>
+    <View className="flex-1">
+      <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
+        <View className="flex-row items-center justify-between mb-6">
+            <Text className="text-2xl font-black text-gray-900">Prescriptions</Text>
+            <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-200">
+                <Ionicons name="add" size={24} color="#fff" />
+            </TouchableOpacity>
         </View>
 
-        <View style={styles.quickFilters}>
-          <TouchableOpacity style={[styles.filterChip, styles.activeChip]}>
-            <Text style={[styles.chipText, styles.activeChipText]}>All</Text>
+        <View className="flex-row items-center bg-white rounded-2xl px-4 py-3 border border-gray-100 mb-6">
+          <Ionicons name="search" size={18} color="#94a3b8" />
+          <TextInput 
+            placeholder="Search prescriptions..." 
+            className="flex-1 ml-3 text-sm text-gray-900" 
+            placeholderTextColor="#94a3b8" 
+          />
+        </View>
+
+        <View className="flex-row gap-2 mb-6">
+          <TouchableOpacity className="bg-blue-600 px-4 py-2 rounded-full">
+            <Text className="text-xs font-bold text-white">All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.filterChip}>
-            <Text style={styles.chipText}>Active</Text>
+          <TouchableOpacity className="bg-white px-4 py-2 rounded-full border border-gray-100">
+            <Text className="text-xs font-bold text-gray-400">Active</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.filterChip}>
-            <Text style={styles.chipText}>Recent</Text>
+          <TouchableOpacity className="bg-white px-4 py-2 rounded-full border border-gray-100">
+            <Text className="text-xs font-bold text-gray-400">Recent</Text>
           </TouchableOpacity>
         </View>
 
@@ -109,184 +108,3 @@ export default function Prescriptions() {
     </DoctorLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    backgroundColor: "#fff",
-  },
-  menuButton: {
-    padding: 8,
-    borderRadius: 10,
-    backgroundColor: "#eff6ff",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  addButton: {
-    padding: 8,
-    borderRadius: 10,
-    backgroundColor: "#2563eb",
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 44,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  searchPlaceholder: {
-    marginLeft: 10,
-    fontSize: 14,
-    color: "#94a3b8",
-  },
-  quickFilters: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 20,
-  },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  activeChip: {
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb",
-  },
-  chipText: {
-    fontSize: 13,
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  activeChipText: {
-    color: "#fff",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  medicIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: "#eff6ff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  mainInfo: {
-    flex: 1,
-  },
-  medicineName: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 2,
-  },
-  patientName: {
-    fontSize: 12,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  activeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  activeBg: {
-    backgroundColor: "#f0fdf4",
-  },
-  inactiveBg: {
-    backgroundColor: "#f1f5f9",
-  },
-  activeText: {
-    fontSize: 10,
-    fontWeight: "700",
-  },
-  activeColor: {
-    color: "#16a34a",
-  },
-  inactiveColor: {
-    color: "#64748b",
-  },
-  metaRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#f8fafc",
-    marginBottom: 16,
-  },
-  metaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  metaText: {
-    fontSize: 11,
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  actionBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: "#f8fafc",
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-    gap: 6,
-  },
-  actionBtnText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#64748b",
-  },
-  editBtn: {
-    backgroundColor: "#eff6ff",
-    borderColor: "#dbeafe",
-  },
-});
