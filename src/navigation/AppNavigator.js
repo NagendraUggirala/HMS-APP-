@@ -21,6 +21,17 @@ import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDas
 import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
 import PharmacyDashboardScreen from "../screens/Pharmacy/PharmacyDashboardScreen";
 
+// Receptionist specific screens
+import PatientRegistrationScreen from "../screens/Receptionist/PatientRegistrationScreen";
+import AppointmentSchedulingScreen from "../screens/Receptionist/AppointmentSchedulingScreen";
+import PatientRecordScreen from "../screens/Receptionist/PatientRecordScreen";
+import OPDManagemenntScreen from "../screens/Receptionist/OPDManagemenntScreen";
+import IPDManagement from "../screens/Receptionist/IPDManagement";
+import DocumentManagementScreen from "../screens/Receptionist/DocumentManagementScreen";
+import BillingScreen from "../screens/Receptionist/BillingScreen";
+import DischargeSummaryScreen from "../screens/Receptionist/DischargeSummaryScreen";
+import ReceptionistProfileScreen from "../screens/Receptionist/MyProfileScreen";
+
 // Doctor specific screens
 import AppointmentsScreen from "../screens/Doctor/AppointmentsScreen";
 import PatientRecordsScree from "../screens/Doctor/PatientRecordsScree";
@@ -131,7 +142,17 @@ export default function AppNavigator() {
         <Stack.Screen name="DischargeSummary" component={DischargeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="NurseProfile" component={MyProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="LabTechnicianDashboard" component={LabTechnicianDashboardScreen} options={{ title: "Lab Technician Dashboard" }} />
-        <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ title: "Receptionist Dashboard" }} />
+        <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="PatientRegistration" component={PatientRegistrationScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="AppointmentScheduling" component={AppointmentSchedulingScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="PatientRecord" component={PatientRecordScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="OPDManagement" component={OPDManagemenntScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="IPDManagement" component={IPDManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="DocumentManagement" component={DocumentManagementScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Billing" component={BillingScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ReceptionistDischarge" component={DischargeSummaryScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ReceptionistProfile" component={ReceptionistProfileScreen} options={{ headerShown: false }} />
+        
         <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
         <Stack.Screen name="PharmacyDashboard" component={PharmacyDashboardScreen} options={{ title: "Pharmacy Dashboard" }} />
       </Stack.Navigator>
