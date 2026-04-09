@@ -58,6 +58,7 @@ const Sidebar = ({ onClose }) => {
     { id: 'doctors', label: 'Doctor Management', icon: 'medical-outline', screen: 'DoctorManagement' },
     { id: 'staff', label: 'Staff Management', icon: 'people', screen: 'StaffManagement' },
     { id: 'departments', label: 'Departments', icon: 'layers-outline', screen: 'DepartmentManagement' },
+    { id: 'dept-assign', label: 'Department Assignment', icon: 'git-network-outline', screen: 'AssignDepartments' },
     { id: 'appointments', label: 'Appointments', icon: 'calendar-outline', screen: 'AppointmentManagement' },
     { id: 'inpatient', label: 'Inpatient Tracking', icon: 'bed-outline', screen: 'InpatientManagement' },
     { id: 'billing', label: 'Billing & Finance', icon: 'card-outline', screen: 'BillingManagement' },
@@ -96,7 +97,7 @@ const Sidebar = ({ onClose }) => {
             </View>
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => handlePress('AdminProfile')}
             className="flex-row items-center p-3 bg-gray-50 rounded-2xl"
           >
