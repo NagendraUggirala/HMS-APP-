@@ -387,20 +387,29 @@ const DepartmentsContent = () => {
         <FormInput label="Department Code *" value={formData.code} onChangeText={set("code")} placeholder="e.g., CARD" icon="pricetag-outline" iconColor="#6366f1" error={fieldErrors.code} />
 
         {/* Head of Department Picker */}
+
         <View className="mb-4 w-full">
-          <Text className="text-sm font-medium text-gray-700 mb-2">Head of Department *</Text>
-          <TouchableOpacity
-            onPress={() => setSelectDoctorModal(true)}
-            className="flex-row items-center border rounded-xl bg-white px-3 py-3"
-            style={{ borderColor: fieldErrors.head_of_department ? "#f87171" : "#d1d5db" }}
-          >
-            <Ionicons name="person-outline" size={16} color="#8b5cf6" style={{ marginRight: 8 }} />
-            <Text className={`flex-1 text-sm ${formData.head_of_department ? "text-slate-800" : "text-gray-400"}`}>
-              {formData.head_of_department || "Select Lead Doctor"}
+          <Text className="text-sm font-medium text-gray-700 mb-2">
+            Head of Department *
+          </Text>
+
+          <TextInput
+            placeholder="Enter Head of Department"
+            value={formData.head_of_department}
+            onChangeText={(text) =>
+              setFormData({ ...formData, head_of_department: text })
+            }
+            className="border rounded-xl bg-white px-3 py-3 text-sm text-slate-800"
+            style={{
+              borderColor: fieldErrors.head_of_department ? "#f87171" : "#d1d5db",
+            }}
+          />
+
+          {fieldErrors.head_of_department ? (
+            <Text className="text-xs text-red-600 mt-1">
+              {fieldErrors.head_of_department}
             </Text>
-            <Ionicons name="chevron-down" size={16} color="#9ca3af" />
-          </TouchableOpacity>
-          {fieldErrors.head_of_department ? <Text className="text-xs text-red-600 mt-1">{fieldErrors.head_of_department}</Text> : null}
+          ) : null}
         </View>
 
         <FormInput label="Location *" value={formData.location} onChangeText={set("location")} placeholder="Floor 2, Wing A" icon="location-outline" iconColor="#f59e0b" error={fieldErrors.location} />
