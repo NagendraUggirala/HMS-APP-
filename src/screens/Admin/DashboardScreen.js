@@ -456,7 +456,7 @@ const DashboardContent = () => {
           <ActionItem label="Bed Allocation" icon="bed" iconBg="#3b82f6" onPress={() => navigation.navigate("InpatientManagement")} />
           <ActionItem label="Schedule Roster" icon="calendar-number" iconBg="#10b981" onPress={() => navigation.navigate("StaffManagement")} />
           <ActionItem label="Medical Inventory" icon="cube" iconBg="#f59e0b" onPress={() => navigation.navigate("PharmacyManagement")} />
-          <ActionItem label="Pending Approvals" icon="checkmark-shield" iconBg="#8b5cf6" onPress={() => navigation.navigate("SettingsManagement")} />
+          <ActionItem label="Pending Approvals" icon="shield-checkmark" iconBg="#8b5cf6" onPress={() => navigation.navigate("SettingsManagement")} />
         </DashSection>
 
         {/* Appointments Section */}
