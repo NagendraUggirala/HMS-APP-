@@ -51,6 +51,7 @@ const ReceptionistSidebar = ({ onClose }) => {
     { id: 'billing', label: 'Billing', icon: 'cash-outline', screen: 'Billing' },
     { id: 'discharge', label: 'Discharge Summary', icon: 'exit-outline', screen: 'ReceptionistDischarge' },
     { id: 'profile', label: 'My Profile', icon: 'person-circle-outline', screen: 'ReceptionistProfile' },
+    { id: 'tickets', label: 'Raise a Ticket', icon: 'alert-circle-outline', screen: 'RaiseTicket' }
   ];
 
   const handlePress = (screen) => {
