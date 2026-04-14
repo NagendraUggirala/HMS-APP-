@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const extra = Constants.expoConfig?.extra || {};
 // Must match app.config.js DEFAULT_API_BASE_URL; block stale ngrok baked into cached config.
-const DEFAULT_API_BASE_URL = "https://hospital-backend-9mg3.onrender.com";
+const DEFAULT_API_BASE_URL = "http://localhost:3000";
 function resolveBaseUrl() {
   let raw = extra.API_BASE_URL || DEFAULT_API_BASE_URL;
   raw = String(raw).trim();
@@ -23,16 +23,21 @@ class ApiService {
 
   async getHeaders(customHeaders = {}) {
     let token = null;
+    let storedHospitalId = null;
     try {
       token = await AsyncStorage.getItem('authToken');
-      console.log(`[ApiService] Token exists: ${!!token}`);
+      const storedUser = await AsyncStorage.getItem('currentUser');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        storedHospitalId = user.hospitalId;
+      }
     } catch (e) {
-      console.warn("Failed to retrieve token for API call", e);
+      console.warn("Failed to retrieve auth data from storage", e);
     }
     
     return {
       'Content-Type': 'application/json',
-      'X-Hospital-ID': this.hospitalId,
+      'X-Hospital-ID': storedHospitalId || this.hospitalId,
       ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...customHeaders,
     };
@@ -103,6 +108,10 @@ class ApiService {
     return this.get('/api/v1/auth/me', {
       Authorization: `Bearer ${token}`,
     });
+  }
+
+  async getReceptionistDashboard() {
+    return this.get('/api/v1/receptionist/dashboard');
   }
 
   async handleResponse(response) {
