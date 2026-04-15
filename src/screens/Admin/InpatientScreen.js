@@ -8,7 +8,7 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
-  Dimensions,
+  Dimensions ,
   StyleSheet,
   Platform,
   RefreshControl,
@@ -28,7 +28,7 @@ const BED_STATUS_OPTIONS = ['available', 'occupied', 'maintenance', 'reserved'];
 
 const HOSPITAL_ADMIN_WARDS = '/api/v1/hospital-admin/wards';
 const HOSPITAL_ADMIN_BEDS = '/api/v1/hospital-admin/beds';
-const INPATIENTS_URL = '/api/v1/hospital-admin/inpatients';
+const INPATIENTS_URL = '/api/v1/hospital-admin/admissions';
 
 // ─── Utility Functions ────────────────────────────────────────────────────────
 function getPagedList(data) {
@@ -37,6 +37,7 @@ function getPagedList(data) {
   if (Array.isArray(raw?.wards)) return { items: raw.wards, total: raw.total ?? raw.wards.length };
   if (Array.isArray(raw?.beds)) return { items: raw.beds, total: raw.total ?? raw.beds.length };
   if (Array.isArray(raw?.inpatients)) return { items: raw.inpatients, total: raw.total ?? raw.inpatients.length };
+  if (Array.isArray(raw?.admissions)) return { items: raw.admissions, total: raw.total ?? raw.admissions.length };
   if (Array.isArray(raw)) return { items: raw, total: raw.length };
   return { items: [], total: 0 };
 }
@@ -48,23 +49,75 @@ function splitToStringArray(text) {
     .filter(Boolean);
 }
 
-function mapInpatient(item) {
+const ADMISSION_TYPE_OPTIONS = ['ELECTIVE', 'EMERGENCY', 'URGENT', 'ROUTINE', 'OBSERVATION'];
+
+function mapInpatient(a) {
+  const id = a?.id ?? a?.admission_id;
+  const pid = id != null ? String(id) : '';
+  const statusRaw = (a?.status ?? a?.admission_status ?? '').toString();
+  const status = statusRaw.toUpperCase();
+  const discharged = status === 'DISCHARGED' || Boolean(a?.discharge_date) || Boolean(a?.discharged_at);
+  const bed = a?.bed && typeof a.bed === 'object' ? a.bed : {};
+  const nameFromPatientObj = [a?.patient?.first_name, a?.patient?.last_name].filter(Boolean).join(' ').trim();
+  const patientLabel =
+    (a?.patient_name && String(a.patient_name).trim()) ||
+    nameFromPatientObj ||
+    a?.patient?.name ||
+    a?.patient?.full_name ||
+    a?.patient_ref ||
+    'Unknown Patient';
+    
+  const admissionDateRaw = a?.admission_date ?? a?.admitted_at ?? '';
+  const admissionDate = typeof admissionDateRaw === 'string' ? admissionDateRaw.split('T')[0] : '—';
+  const dischargeDateRaw = a?.discharge_date ?? a?.discharged_at;
+  const dischargeDate = dischargeDateRaw ? String(dischargeDateRaw).split('T')[0] : null;
+  
+  const bedIdStr = bed?.id != null ? String(bed.id) : (a?.bed_id != null ? String(a.bed_id) : '');
+  const bedNo = bed?.bed_number ?? a?.bed_number ?? '—';
+  const wardName = a?.ward_name ?? bed?.ward_name ?? a?.room ?? '—';
+
   return {
-    id: item?.id ?? item?.inpatient_id ?? item?.patient_id ?? 'N/A',
-    patient: item?.patient_name ?? item?.patient?.name ?? 'Unknown Patient',
-    doctor: item?.doctor_name ?? item?.doctor?.name ?? 'Not Assigned',
-    roomNo: item?.room_number ?? item?.room_no ?? 'N/A',
-    bedNo: item?.bed_number ?? item?.bed_no ?? 'N/A',
-    admissionDate: item?.admission_date ?? item?.created_at?.split('T')[0] ?? 'N/A',
-    diagnosis: item?.diagnosis ?? 'Pending diagnosis',
-    treatmentPlan: item?.treatment_plan ?? 'Monitoring and evaluation',
-    insurance: item?.insurance_provider ?? item?.insurance?.provider ?? null,
-    insuranceId: item?.insurance_id ?? item?.insurance?.policy_id ?? 'N/A',
-    insuranceAmount: item?.coverage_amount ?? item?.insurance?.coverage ?? '0',
-    emergencyContact: item?.emergency_contact_phone ?? item?.emergency_contact ?? 'N/A',
-    dischargeDate: item?.discharge_date ?? null,
+    id: pid,
+    raw: a,
+    patient: patientLabel,
+    patient_ref: a?.patient_ref ?? '',
+    roomNo: wardName,
+    bedNo: bedNo,
+    bed_id: bedIdStr,
+    admissionDate,
+    dischargeDate,
+    doctor: a?.admitting_doctor ?? a?.doctor_name ?? a?.doctor?.name ?? '—',
+    diagnosis: a?.diagnosis ?? '',
+    treatmentPlan: a?.symptoms ?? a?.treatment_plan ?? '',
+    emergencyContact: a?.emergency_contact ?? a?.emergency_contact_phone ?? '—',
+    insurance: a?.insurance_details ?? a?.insurance_provider ?? '',
+    status: status || '—',
+    department: a?.department ?? '',
+    admission_type: a?.admission_type ?? '',
+    medical_history: a?.medical_history ?? '',
+    discharged,
+    needsBedAssignment: !discharged && !bedIdStr
   };
 }
+
+const defaultAdmissionCreateForm = () => {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return {
+    patient_ref: '',
+    admission_type: 'ELECTIVE',
+    admission_date: now.toISOString().slice(0, 10),
+    admission_time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    admitting_doctor: '',
+    department: '',
+    diagnosis: '',
+    symptoms: '',
+    medical_history: '',
+    emergency_contact: '',
+    insurance_details: '',
+    estimated_stay_days: '1'
+  };
+};
 
 // ─── Premium UI Components ───────────────────────────────────────────────────
 
@@ -180,34 +233,41 @@ const InpatientManagementContent = () => {
   const [modalState, setModalState] = useState({
     view: false,
     discharge: false,
-    transfer: false,
-    roomShift: false,
+    assignBed: false,
+    createAdmission: false,
     createWard: false,
     createBed: false
   });
   const [currentPatient, setCurrentPatient] = useState(null);
-  const [formData, setFormData] = useState({ roomNo: '', bedNo: '' });
+  const [admissionCreateForm, setAdmissionCreateForm] = useState(() => defaultAdmissionCreateForm());
+  const [assignBedForm, setAssignBedForm] = useState({ bed_id: '', admission_notes: '' });
+  const [dischargeForm, setDischargeForm] = useState({ discharge_notes: '', discharge_summary: '' });
+  const [availableBeds, setAvailableBeds] = useState([]);
+  const [bedsLoading, setBedsLoading] = useState(false);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const loadInpatients = useCallback(async (isRefresh = false) => {
     if (!isRefresh) setLoading(true);
     try {
-      const data = await api.get(`${INPATIENTS_URL}?limit=100`);
+      const params = new URLSearchParams({ limit: '100' });
+      if (statusFilter) params.set('status', statusFilter);
+      if (dateFrom) params.set('date_from', dateFrom);
+      if (dateTo) params.set('date_to', dateTo);
+      
+      const data = await api.get(`${INPATIENTS_URL}?${params.toString()}`);
       const mapped = getPagedList(data).items.map(mapInpatient);
       setInpatients(mapped);
 
-      // Attempt to get stats from general overview or calculate locally
-      const overview = await api.get('/api/v1/hospital-admin/dashboard/overview').catch(() => null);
-      if (overview?.bed_metrics) {
-        setStats({
-          occupied: overview.bed_metrics.occupied_beds || mapped.filter(p => !p.dischargeDate).length,
-          total: overview.bed_metrics.total_beds || 50
-        });
-      } else {
-        setStats({
-          occupied: mapped.filter(p => !p.dischargeDate).length,
-          total: Math.max(50, mapped.length + 5)
-        });
-      }
+      // Simple stats local calculation
+      const admittedWithBed = mapped.filter(ip => !ip.discharged && ip.bed_id).length;
+      const pendingBed = mapped.filter(ip => !ip.discharged && !ip.bed_id).length;
+      setStats({
+        admitted: admittedWithBed,
+        pending: pendingBed,
+        total: mapped.length
+      });
     } catch (error) {
       console.warn("Failed to load inpatients:", error);
       setInpatients([]);
@@ -215,7 +275,7 @@ const InpatientManagementContent = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [statusFilter, dateFrom, dateTo]);
 
   useEffect(() => {
     loadInpatients();
@@ -226,19 +286,26 @@ const InpatientManagementContent = () => {
     loadInpatients(true);
   };
 
-  const occupiedBeds = inpatients.filter(ip => !ip.dischargeDate).length;
-  const totalBeds = 50; // Mock total
-
   const filteredInpatients = inpatients.filter(p =>
-    p.patient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase())
+    !p.discharged && (
+      p.patient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.patient_ref?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.department?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   );
 
-  const openModal = (type, patient = null) => {
+  const openModal = async (type, patient = null) => {
     setCurrentPatient(patient);
-    if (patient) {
-      setFormData({ roomNo: patient.roomNo, bedNo: patient.bedNo });
+    if (type === 'assignBed' && patient) {
+      setAssignBedForm({ bed_id: '', admission_notes: '' });
+      setBedsLoading(true);
+      try {
+        const res = await api.get(`${HOSPITAL_ADMIN_BEDS}?status=available&limit=100`);
+        setAvailableBeds(getPagedList(res).items);
+      } catch (e) { console.warn(e); }
+      finally { setBedsLoading(false); }
     }
     setModalState(prev => ({ ...prev, [type]: true }));
   };
@@ -247,10 +314,32 @@ const InpatientManagementContent = () => {
     setModalState(prev => ({ ...prev, [type]: false }));
   };
 
+  const handleCreateAdmission = async () => {
+    if (!admissionCreateForm.patient_ref.trim()) {
+      Alert.alert("Error", "Patient reference is required.");
+      return;
+    }
+    try {
+      await api.post(INPATIENTS_URL, {
+        ...admissionCreateForm,
+        estimated_stay_days: Number(admissionCreateForm.estimated_stay_days)
+      });
+      Alert.alert("Success", "Admission created successfully.");
+      closeModal('createAdmission');
+      loadInpatients();
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to create admission.");
+    }
+  };
+
   const handleDischargePatient = async () => {
     if (!currentPatient) return;
     try {
-      await api.post(`${INPATIENTS_URL}/${currentPatient.id}/discharge`);
+      const body = {};
+      if (dischargeForm.discharge_notes.trim()) body.discharge_notes = dischargeForm.discharge_notes.trim();
+      if (dischargeForm.discharge_summary.trim()) body.discharge_summary = dischargeForm.discharge_summary.trim();
+      
+      await api.patch(`${INPATIENTS_URL}/${currentPatient.id}/discharge`, body);
       Alert.alert("Success", "Patient discharged successfully.");
       closeModal('discharge');
       loadInpatients();
@@ -259,19 +348,18 @@ const InpatientManagementContent = () => {
     }
   };
 
-  const handleTransferPatient = async (type) => {
-    if (!currentPatient || !formData.roomNo || !formData.bedNo) return;
+  const handleAssignBed = async () => {
+    if (!currentPatient || !assignBedForm.bed_id) return;
     try {
-      await api.post(`${INPATIENTS_URL}/${currentPatient.id}/transfer`, {
-        room_number: formData.roomNo,
-        bed_number: formData.bedNo,
-        transfer_type: type === 'roomShift' ? 'ROOM_SHIFT' : 'WARD_TRANSFER'
+      await api.patch(`${INPATIENTS_URL}/${currentPatient.id}/assign-bed`, {
+        bed_id: assignBedForm.bed_id,
+        admission_notes: assignBedForm.admission_notes.trim()
       });
-      Alert.alert("Success", `Patient ${type === 'roomShift' ? 'shifted' : 'transferred'} successfully.`);
-      closeModal(type);
+      Alert.alert("Success", "Bed assigned successfully.");
+      closeModal('assignBed');
       loadInpatients();
     } catch (error) {
-      Alert.alert("Error", error.message || "Failed to transfer patient.");
+      Alert.alert("Error", error.message || "Failed to assign bed.");
     }
   };
 
@@ -291,6 +379,13 @@ const InpatientManagementContent = () => {
           </View>
 
           <View className="bg-slate-100 p-1 rounded-2xl flex-row items-center">
+            <TouchableOpacity
+              onPress={() => openModal('createAdmission')}
+              className="mr-1 h-8 px-3 rounded-xl flex-row items-center bg-blue-600 shadow-sm"
+            >
+              <Ionicons name="add" size={14} color="white" />
+              <Text className="text-[10px] font-black text-white ml-1 uppercase">New</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setMainTab('inpatients')}
               className={`px-4 py-2.5 rounded-xl flex-row items-center ${mainTab === 'inpatients' ? 'bg-white shadow-sm' : ''}`}
@@ -329,15 +424,15 @@ const InpatientManagementContent = () => {
 
             {/* ── Metrics ── */}
             <View className="flex-row flex-wrap justify-between mb-8">
-              <MetricCard label="Occupied Beds" value={occupiedBeds} icon="chart-line" iconColor="#3B82F6" bgColor="#EFF6FF" subtext="ACTIVE" />
-              <MetricCard label="Available Beds" value={totalBeds - occupiedBeds} icon="check-circle" iconColor="#10B981" bgColor="#F0FDF4" subtext={`TOTAL ${totalBeds}`} />
-              <MetricCard label="Occupancy Rate" value={`${Math.round((occupiedBeds / totalBeds) * 100)}%`} icon="chart-pie" iconColor="#8B5CF6" bgColor="#F5F3FF" subtext="QUARTERLY" />
+              <MetricCard label="Admitted Patients" value={stats.admitted || 0} icon="procedures" iconColor="#3B82F6" bgColor="#EFF6FF" subtext="IN BEDS" />
+              <MetricCard label="Pending Bed" value={stats.pending || 0} icon="hourglass-half" iconColor="#EAB308" bgColor="#FFFBEB" subtext="TO ASSIGN" />
+              <MetricCard label="Total Admissions" value={stats.total || 0} icon="clipboard-list" iconColor="#8B5CF6" bgColor="#F5F3FF" subtext="THIS PAGE" />
             </View>
 
             <View className="flex-row items-center justify-between mb-6 px-1">
-              <Text className="text-[11px] font-black text-slate-400 uppercase tracking-[2px]">Ward Occupancy List</Text>
+              <Text className="text-[11px] font-black text-slate-400 uppercase tracking-[2px]">Active Inpatients</Text>
               <View className="bg-blue-50 px-2 py-1 rounded-lg">
-                <Text className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">{filteredInpatients.length} ACTIVE</Text>
+                <Text className="text-[9px] font-bold text-blue-600 uppercase tracking-widest">{filteredInpatients.length} VISIBLE</Text>
               </View>
             </View>
 
@@ -347,7 +442,7 @@ const InpatientManagementContent = () => {
                   <Ionicons name="people-outline" size={32} color="#CBD5E1" />
                 </View>
                 <Text className="text-slate-900 font-black text-lg">No Results Found</Text>
-                <Text className="text-slate-400 text-xs text-center px-16 mt-2">Adjust your filters or register a new admission via the central desk.</Text>
+                <Text className="text-slate-400 text-xs text-center px-16 mt-2">Adjust your filters or register a new admission via the 'New' button.</Text>
               </View>
             ) : (
               filteredInpatients.map(patient => (
@@ -356,8 +451,7 @@ const InpatientManagementContent = () => {
                   patient={patient}
                   onView={() => openModal('view', patient)}
                   onDischarge={() => openModal('discharge', patient)}
-                  onTransfer={() => openModal('transfer', patient)}
-                  onRoomShift={() => openModal('roomShift', patient)}
+                  onAssignBed={() => openModal('assignBed', patient)}
                 />
               ))
             )}
@@ -378,7 +472,7 @@ const InpatientManagementContent = () => {
                         </View>
                         <View>
                           <Text className="text-sm font-bold text-slate-800">{ip.patient}</Text>
-                          <Text className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{ip.roomNo}-{ip.bedNo} • OUT: {ip.dischargeDate}</Text>
+                          <Text className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{ip.roomNo || 'NO WARD'} - {ip.bedNo || 'NO BED'} • OUT: {ip.dischargeDate}</Text>
                         </View>
                       </View>
                       <View className="items-end">
@@ -399,34 +493,32 @@ const InpatientManagementContent = () => {
       {/* ── Modals ── */}
       <ViewPatientModal isOpen={modalState.view} onClose={() => closeModal('view')} patient={currentPatient} />
 
-      <StatusActionModal
+      <CreateAdmissionModal
+        isOpen={modalState.createAdmission}
+        onClose={() => closeModal('createAdmission')}
+        form={admissionCreateForm}
+        setForm={setAdmissionCreateForm}
+        onSubmit={handleCreateAdmission}
+      />
+
+      <AssignBedModal
+        isOpen={modalState.assignBed}
+        onClose={() => closeModal('assignBed')}
+        patient={currentPatient}
+        beds={availableBeds}
+        bedsLoading={bedsLoading}
+        form={assignBedForm}
+        setForm={setAssignBedForm}
+        onSubmit={handleAssignBed}
+      />
+
+      <DischargeModal
         isOpen={modalState.discharge}
         onClose={() => closeModal('discharge')}
         onConfirm={handleDischargePatient}
         patient={currentPatient}
-        type="DISCHARGE"
-        icon="sign-out-alt"
-        color="#10b981"
-      />
-
-      <TransferModal
-        isOpen={modalState.transfer}
-        onClose={() => closeModal('transfer')}
-        onConfirm={() => handleTransferPatient('transfer')}
-        formData={formData}
-        onInputChange={(f, v) => setFormData(p => ({ ...p, [f]: v }))}
-        patient={currentPatient}
-        type="TRANSFER"
-      />
-
-      <TransferModal
-        isOpen={modalState.roomShift}
-        onClose={() => closeModal('roomShift')}
-        onConfirm={() => handleTransferPatient('roomShift')}
-        formData={formData}
-        onInputChange={(f, v) => setFormData(p => ({ ...p, [f]: v }))}
-        patient={currentPatient}
-        type="ROOM SHIFT"
+        form={dischargeForm}
+        setForm={setDischargeForm}
       />
 
       <CreateWardModal isOpen={modalState.createWard} onClose={() => closeModal('createWard')} />
@@ -630,23 +722,45 @@ const DetailTile = ({ label, value, icon, color }) => (
   </View>
 );
 
-const StatusActionModal = ({ isOpen, onClose, onConfirm, patient, type, icon, color }) => (
-  <CustomModal isOpen={isOpen} onClose={onClose} title={`Confirm ${type}`}>
+const DischargeModal = ({ isOpen, onClose, onConfirm, patient, form, setForm }) => (
+  <CustomModal isOpen={isOpen} onClose={onClose} title="Execute Discharge">
     {patient && (
       <View className="items-center py-6">
-        <View style={{ backgroundColor: `${color}15` }} className="h-24 w-24 rounded-[40px] items-center justify-center mb-8">
-          <FontAwesome5 name={icon} size={32} color={color} />
+        <View className="h-24 w-24 bg-emerald-50 rounded-[40px] items-center justify-center mb-8 border border-emerald-100">
+          <FontAwesome5 name="sign-out-alt" size={32} color="#10b981" />
         </View>
-        <Text className="text-xl font-black text-slate-900 tracking-tighter text-center mb-3">Execute {type} Protocol?</Text>
+        <Text className="text-xl font-black text-slate-900 tracking-tighter text-center mb-3">Confirm Discharge?</Text>
         <Text className="text-slate-400 text-center text-sm leading-6 mb-10 px-6 font-medium">
-          Are you sure you want to {type.toLowerCase()} <Text className="font-black text-slate-900">{patient.patient}</Text> from {patient.roomNo}-{patient.bedNo}? This action is permanent.
+          Ready to finalize session for <Text className="font-black text-slate-900">{patient.patient}</Text>?
         </Text>
+        
+        <View className="w-full space-y-4 mb-10">
+          <TextInput
+            className="bg-slate-50 border border-slate-100 p-5 rounded-[24px] text-slate-900 font-bold"
+            placeholder="DISCHARGE NOTES"
+            placeholderTextColor="#94a3b8"
+            multiline
+            numberOfLines={3}
+            value={form.discharge_notes}
+            onChangeText={(v) => setForm(f => ({ ...f, discharge_notes: v }))}
+          />
+          <TextInput
+            className="bg-slate-50 border border-slate-100 p-5 rounded-[24px] text-slate-900 font-bold"
+            placeholder="DISCHARGE SUMMARY (OPTIONAL)"
+            placeholderTextColor="#94a3b8"
+            multiline
+            numberOfLines={2}
+            value={form.discharge_summary}
+            onChangeText={(v) => setForm(f => ({ ...f, discharge_summary: v }))}
+          />
+        </View>
+
         <View className="flex-row w-full" style={{ gap: 15 }}>
           <TouchableOpacity onPress={onClose} className="flex-1 py-5 border border-slate-200 rounded-[28px] items-center">
             <Text className="font-black text-slate-400 uppercase tracking-widest text-[10px]">CANCEL</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onConfirm} style={{ backgroundColor: color }} className="flex-1 py-5 rounded-[28px] items-center shadow-lg">
-            <Text className="font-black text-white uppercase tracking-widest text-[10px]">CONFIRM</Text>
+          <TouchableOpacity onPress={onConfirm} className="flex-1 py-5 bg-emerald-600 rounded-[28px] items-center shadow-lg shadow-emerald-100">
+            <Text className="font-black text-white uppercase tracking-widest text-[10px]">DISCHARGE</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -654,63 +768,140 @@ const StatusActionModal = ({ isOpen, onClose, onConfirm, patient, type, icon, co
   </CustomModal>
 );
 
-const TransferModal = ({ isOpen, onClose, onConfirm, formData, onInputChange, patient, type }) => (
-  <CustomModal isOpen={isOpen} onClose={onClose} title={type}>
+const AssignBedModal = ({ isOpen, onClose, patient, beds, bedsLoading, form, setForm, onSubmit }) => (
+  <CustomModal isOpen={isOpen} onClose={onClose} title="Station Assignment">
     {patient && (
       <View>
-        <View className="bg-blue-50/50 p-8 rounded-[40px] mb-8 border border-blue-100/50">
-          <Text className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-4">CURRENT STATION</Text>
-          <View className="flex-row justify-between items-end">
-            <View>
-              <Text className="text-[8px] font-black text-slate-400 uppercase tracking-[1px]">ROOM</Text>
-              <Text className="text-3xl font-black text-slate-800 tracking-tighter">{patient.roomNo}</Text>
-            </View>
-            <View className="items-end">
-              <Text className="text-[8px] font-black text-slate-400 uppercase tracking-[1px]">UNIT</Text>
-              <Text className="text-3xl font-black text-slate-800 tracking-tighter">{patient.bedNo}</Text>
-            </View>
-          </View>
+        <View className="bg-indigo-50/50 p-8 rounded-[40px] mb-8 border border-indigo-100/50">
+          <Text className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-2">TARGET PATIENT</Text>
+          <Text className="text-2xl font-black text-slate-800 tracking-tighter">{patient.patient}</Text>
+          <Text className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">ID: {patient.id}</Text>
         </View>
 
         <View className="mb-10">
-          <Text className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">TARGET STATION SELECTION</Text>
-          <View className="mb-6">
-            <TextInput
-              className="bg-slate-50 border border-slate-100 p-5 rounded-[24px] text-slate-900 font-black h-14"
-              placeholder="TARGET ROOM ID"
-              placeholderTextColor="#94a3b8"
-              value={formData.roomNo}
-              onChangeText={(v) => onInputChange('roomNo', v)}
-            />
-          </View>
-          <View>
-            <TextInput
-              className="bg-slate-50 border border-slate-100 p-5 rounded-[24px] text-slate-900 font-black h-14"
-              placeholder="TARGET UNIT ID"
-              placeholderTextColor="#94a3b8"
-              value={formData.bedNo}
-              onChangeText={(v) => onInputChange('bedNo', v)}
-            />
-          </View>
-          <View className="mt-4 bg-orange-50 p-4 rounded-2xl flex-row items-center">
-            <Ionicons name="alert-circle" size={16} color="#f97316" />
-            <Text className="text-[9px] font-bold text-orange-700 ml-2 uppercase tracking-widest">Verify bed availability before confirming transfer.</Text>
-          </View>
+          <Text className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">SELECT AVAILABLE UNIT</Text>
+          {bedsLoading ? (
+            <ActivityIndicator color="#4F46E5" />
+          ) : (
+            <View className="flex-row flex-wrap" style={{ gap: 10 }}>
+              {beds.length === 0 ? (
+                <Text className="text-xs text-orange-500 font-bold">No available beds found in registry.</Text>
+              ) : (
+                beds.map(b => (
+                  <TouchableOpacity
+                    key={b.id}
+                    onPress={() => setForm(f => ({ ...f, bed_id: String(b.id) }))}
+                    className={`px-4 py-3 rounded-2xl border ${form.bed_id === String(b.id) ? 'bg-indigo-600 border-indigo-600' : 'bg-slate-50 border-slate-100'}`}
+                  >
+                    <Text className={`text-xs font-black ${form.bed_id === String(b.id) ? 'text-white' : 'text-slate-600'}`}>
+                      {b.bed_number} ({b.ward_name || 'Ward'})
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              )}
+            </View>
+          )}
+          
+          <TextInput
+            className="bg-slate-50 border border-slate-100 p-5 rounded-[24px] text-slate-900 font-bold mt-8"
+            placeholder="REASSIGNMENT NOTES"
+            placeholderTextColor="#94a3b8"
+            multiline
+            numberOfLines={2}
+            value={form.admission_notes}
+            onChangeText={(v) => setForm(f => ({ ...f, admission_notes: v }))}
+          />
         </View>
 
         <TouchableOpacity
-          onPress={onConfirm}
-          disabled={!formData.roomNo?.trim() || !formData.bedNo?.trim()}
-          className={`w-full py-5 bg-indigo-600 rounded-[28px] items-center shadow-lg shadow-indigo-200 ${(!formData.roomNo?.trim() || !formData.bedNo?.trim()) ? 'opacity-50' : ''}`}
+          onPress={onSubmit}
+          disabled={!form.bed_id}
+          className={`w-full py-5 bg-indigo-600 rounded-[28px] items-center shadow-lg shadow-indigo-200 ${!form.bed_id ? 'opacity-50' : ''}`}
         >
-          <Text className="text-white font-black uppercase tracking-widest text-[10px]">COMMIT REASSIGNMENT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onClose} className="w-full py-4 mt-2 items-center">
-          <Text className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">ABORT ACTION</Text>
+          <Text className="text-white font-black uppercase tracking-widest text-[10px]">ASSIGN UNIT</Text>
         </TouchableOpacity>
       </View>
     )}
   </CustomModal>
+);
+
+const CreateAdmissionModal = ({ isOpen, onClose, form, setForm, onSubmit }) => {
+  const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
+  return (
+    <CustomModal isOpen={isOpen} onClose={onClose} title="New Admission">
+      <View>
+        <View className="mb-6">
+          <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">PATIENT REFERENCE *</Text>
+          <TextInput
+            className="bg-slate-50 border border-slate-100 p-4 rounded-[20px] text-slate-900 font-black h-14"
+            placeholder="UUID, MRN, OR MOBILE"
+            placeholderTextColor="#94a3b8"
+            value={form.patient_ref}
+            onChangeText={v => set('patient_ref', v)}
+          />
+        </View>
+        
+        <View className="flex-row" style={{ gap: 12 }}>
+          <View className="flex-1">
+            <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">TYPE</Text>
+            <View className="bg-slate-100 p-1 rounded-2xl flex-row flex-wrap" style={{ gap: 4 }}>
+              {ADMISSION_TYPE_OPTIONS.slice(0, 3).map(opt => (
+                <TouchableOpacity key={opt} onPress={() => set('admission_type', opt)} className={`px-2 py-1.5 rounded-xl ${form.admission_type === opt ? 'bg-white shadow-sm' : ''}`}>
+                  <Text className={`text-[8px] font-black ${form.admission_type === opt ? 'text-indigo-600' : 'text-slate-400'}`}>{opt}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          <View className="flex-1">
+            <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">STAY (DAYS)</Text>
+            <TextInput
+              keyboardType="numeric"
+              className="bg-slate-50 border border-slate-100 p-4 rounded-[20px] text-slate-900 font-black h-14 text-center"
+              value={String(form.estimated_stay_days)}
+              onChangeText={v => set('estimated_stay_days', v)}
+            />
+          </View>
+        </View>
+
+        <View className="flex-row mt-6" style={{ gap: 12 }}>
+          <View className="flex-1">
+             <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">ADMISSION DATE</Text>
+             <TextInput className="bg-slate-50 border border-slate-100 p-4 rounded-[20px] text-slate-900 font-bold" value={form.admission_date} onChangeText={v => set('admission_date', v)} />
+          </View>
+          <View className="flex-1">
+             <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">TIME</Text>
+             <TextInput className="bg-slate-50 border border-slate-100 p-4 rounded-[20px] text-slate-900 font-bold" value={form.admission_time} onChangeText={v => set('admission_time', v)} />
+          </View>
+        </View>
+
+        <View className="mt-6">{renderAdmissionField('DOCTOR', 'admitting_doctor', 'Name of physician', form, set)}</View>
+        <View className="mt-4">{renderAdmissionField('DEPARTMENT', 'department', 'e.g. Cardiology', form, set)}</View>
+        <View className="mt-4">{renderAdmissionField('DIAGNOSIS', 'diagnosis', 'Initial findings', form, set)}</View>
+        <View className="mt-4">{renderAdmissionField('SYMPTOMS', 'symptoms', 'Clinical presentation', form, set, true)}</View>
+        <View className="mt-4">{renderAdmissionField('MEDICAL HISTORY', 'medical_history', 'Past conditions', form, set, true)}</View>
+        <View className="mt-4">{renderAdmissionField('EMERGENCY CONTACT', 'emergency_contact', 'Name & Phone', form, set)}</View>
+        <View className="mt-4 mb-10">{renderAdmissionField('INSURANCE DETAILS', 'insurance_details', 'Provider & ID', form, set, true)}</View>
+
+        <TouchableOpacity onPress={onSubmit} className="w-full py-5 bg-blue-600 rounded-[28px] items-center mb-10 shadow-lg shadow-blue-100">
+          <Text className="text-white font-black uppercase tracking-widest text-[10px]">Commit Admission</Text>
+        </TouchableOpacity>
+      </View>
+    </CustomModal>
+  );
+};
+
+const renderAdmissionField = (label, key, placeholder, form, set, multiline = false) => (
+  <View>
+    <Text className="text-[9px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-widest">{label}</Text>
+    <TextInput
+      className={`bg-slate-50 border border-slate-100 p-4 rounded-[20px] text-slate-900 font-bold ${multiline ? 'h-24' : 'h-14'}`}
+      placeholder={placeholder}
+      placeholderTextColor="#94a3b8"
+      multiline={multiline}
+      value={form[key]}
+      onChangeText={v => set(key, v)}
+    />
+  </View>
 );
 
 const CreateWardModal = ({ isOpen, onClose }) => {
