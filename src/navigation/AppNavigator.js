@@ -41,6 +41,9 @@ import LabResults from "../screens/Doctor/LabResults";
 import InpatientVisits from "../screens/Doctor/InpatientVisits";
 import Messaging from "../screens/Doctor/Messaging";
 import MyProfile from "../screens/Doctor/MyProfile";
+import SchedulingManagement from "../screens/Doctor/SchedulingManagement";
+import RaiseTicket from "../screens/Doctor/RaiseTicket";
+
 
 // Admin screens
 import AdminSidebarScreen from "../screens/Admin/AdminsidebarScreen";
@@ -130,6 +133,9 @@ export default function AppNavigator() {
         <Stack.Screen name="InpatientVisits" component={InpatientVisits} options={{ headerShown: false }} />
         <Stack.Screen name="DoctorMessaging" component={Messaging} options={{ headerShown: false }} />
         <Stack.Screen name="DoctorProfile" component={MyProfile} options={{ headerShown: false }} />
+        <Stack.Screen name="SchedulingManagement" component={SchedulingManagement} options={{ headerShown: false }} />
+        <Stack.Screen name="DoctorRaiseTicket" component={RaiseTicket} options={{ headerShown: false }} />
+
 
         {/* General User Dashboards */}
         {/* Nurse Dashboard & Management */}
