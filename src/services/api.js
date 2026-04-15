@@ -114,6 +114,22 @@ class ApiService {
     return this.get('/api/v1/receptionist/dashboard');
   }
 
+  async getReceptionistProfile() {
+    return this.get('/api/v1/receptionist/profile');
+  }
+
+  async getNurseProfile() {
+    return this.get('/api/v1/nurse/profile');
+  }
+
+  async getStaffTickets(skip = 0, limit = 50, completedOnly = false) {
+    return this.get(`/api/v1/support/staff/tickets?skip=${skip}&limit=${limit}&completed_only=${completedOnly}`);
+  }
+
+  async createSupportTicket(data) {
+    return this.post('/api/v1/support/staff/tickets', data);
+  }
+
   async handleResponse(response) {
     const responseText = await response.text();
     let responseData = {};

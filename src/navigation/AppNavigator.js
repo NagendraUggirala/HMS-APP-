@@ -31,6 +31,7 @@ import DocumentManagementScreen from "../screens/Receptionist/DocumentManagement
 import BillingScreen from "../screens/Receptionist/BillingScreen";
 import DischargeSummaryScreen from "../screens/Receptionist/DischargeSummaryScreen";
 import ReceptionistProfileScreen from "../screens/Receptionist/MyProfileScreen";
+import RaiseTicketRecpScreen from "../screens/Receptionist/RaiseTicketRecpScreen";
 
 // Doctor specific screens
 import AppointmentsScreen from "../screens/Doctor/AppointmentsScreen";
@@ -152,6 +153,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Billing" component={BillingScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ReceptionistDischarge" component={DischargeSummaryScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ReceptionistProfile" component={ReceptionistProfileScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ReceptionistRaiseTicket" component={RaiseTicketRecpScreen} options={{ headerShown: false }} />
         
         <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
         <Stack.Screen name="PharmacyDashboard" component={PharmacyDashboardScreen} options={{ title: "Pharmacy Dashboard" }} />
