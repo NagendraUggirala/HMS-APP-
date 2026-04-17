@@ -130,6 +130,14 @@ class ApiService {
     return this.post('/api/v1/support/staff/tickets', data);
   }
 
+  async registerPatient(data) {
+    return this.post('/api/v1/receptionist/patients/register', data);
+  }
+
+  async getAllPatientsDebug() {
+    return this.get('/api/v1/ipd-management/debug/all-patients');
+  }
+
   async handleResponse(response) {
     const responseText = await response.text();
     let responseData = {};
