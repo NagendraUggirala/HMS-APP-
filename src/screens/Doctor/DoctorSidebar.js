@@ -49,6 +49,8 @@ const DoctorSidebar = ({ onClose }) => {
     { id: 'inpatient', label: 'Inpatient Visits', icon: 'bed-outline', screen: 'InpatientVisits' },
     { id: 'messaging', label: 'Messaging', icon: 'chatbubble-ellipses-outline', screen: 'DoctorMessaging' },
     { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'DoctorProfile' },
+    { id: 'scheduling', label: 'Scheduling', icon: 'time-outline', screen: 'SchedulingManagement' },
+    { id: 'tickets', label: 'Raise Ticket', icon: 'help-circle-outline', screen: 'DoctorRaiseTicket' },
   ];
 
   const handlePress = (screen) => {

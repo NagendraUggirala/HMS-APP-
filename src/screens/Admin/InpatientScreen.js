@@ -102,6 +102,8 @@ function mapInpatient(a) {
 
 const defaultAdmissionCreateForm = () => {
   const now = new Date();
+
+  
   const pad = (n) => String(n).padStart(2, '0');
   return {
     patient_ref: '',
