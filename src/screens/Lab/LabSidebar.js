@@ -42,33 +42,29 @@ const SidebarItem = ({ label, icon, isActive, onPress }) => (
   </TouchableOpacity>
 );
 
-const DoctorSidebar = ({ onClose }) => {
+const LabSidebar = ({ onClose }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { logout, currentUser } = useAppContext();
 
   const activeRoute = route.name;
 
-  const doctorMenu = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'grid-outline', screen: 'DoctorDashboard' },
-    { id: 'appointments', label: 'Appointments', icon: 'calendar-outline', screen: 'DoctorAppointments' },
-    { id: 'records', label: 'Patient Records', icon: 'people-outline', screen: 'PatientRecords' },
-    { id: 'prescriptions', label: 'Prescriptions', icon: 'medical-outline', screen: 'PrescriptionManagement' },
-    { id: 'lab', label: 'Lab Results', icon: 'flask-outline', screen: 'LabResults' },
-    { id: 'inpatient', label: 'Inpatient Visits', icon: 'bed-outline', screen: 'InpatientVisits' },
-    { id: 'messaging', label: 'Messaging', icon: 'chatbubble-ellipses-outline', screen: 'DoctorMessaging' },
-    { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'DoctorProfile' },
-    { id: 'scheduling', label: 'Scheduling', icon: 'time-outline', screen: 'SchedulingManagement' },
-    { id: 'tracking', label: 'Appointment Tracking', icon: 'analytics-outline', screen: 'AppointmentTracking' },
-    { id: 'tickets', label: 'Raise Ticket', icon: 'help-circle-outline', screen: 'DoctorRaiseTicket' },
+  const labMenu = [
+    { id: 'lab-dashboard', label: 'Lab Dashboard', icon: 'grid-outline', screen: 'LabDashboard' },
+    { id: 'critical-results', label: 'Critical Results', icon: 'alert-circle-outline', screen: 'CriticalResults' },
+    { id: 'test-registration', label: 'Test Registration', icon: 'flask-outline', screen: 'TestRegistration' },
+    { id: 'sample-tracking', label: 'Sample Tracking', icon: 'barcode-outline', screen: 'SampleTracking' },
+    { id: 'report-generation', label: 'Report Generation', icon: 'document-text-outline', screen: 'ReportGeneration' },
+    { id: 'result-access', label: 'Result Access', icon: 'shield-checkmark-outline', screen: 'ResultAccess' },
+    { id: 'test-catalogue', label: 'Test Catalogue', icon: 'book-outline', screen: 'TestCatalogue' },
+    { id: 'equipment-tracking', label: 'Equipment Tracking', icon: 'construct-outline', screen: 'EquipmentTracking' },
+    { id: 'quality-control', label: 'Quality Control', icon: 'stats-chart-outline', screen: 'QualityControl' },
+    { id: 'profile', label: 'Lab Profile', icon: 'person-outline', screen: 'LabProfile' },
+    { id: 'raise-ticket', label: 'Raise Ticket', icon: 'mail-outline', screen: 'LabRaiseTicket' }
   ];
 
   const handlePress = (screen) => {
-    try {
-      navigation.navigate(screen);
-    } catch (e) {
-      console.warn(`Screen ${screen} not found`);
-    }
+    navigation.navigate(screen);
     if (onClose) onClose();
   };
 
@@ -85,11 +81,11 @@ const DoctorSidebar = ({ onClose }) => {
         <View className="px-6 mb-8 mt-4">
           <View className="flex-row items-center mb-6">
             <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 shadow-lg shadow-blue-300">
-              <MaterialCommunityIcons name="stethoscope" size={24} color="white" />
+              <MaterialCommunityIcons name="flask" size={24} color="white" />
             </View>
             <View className="ml-3">
               <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }} className="tracking-tight">Clinical</Text>
-              <Text className="text-sm font-bold text-blue-600 -mt-1">Curator Doctor</Text>
+              <Text className="text-sm font-bold text-blue-600 -mt-1">Curator Lab</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={{ position: 'absolute', right: 0 }}>
                 <Ionicons name="close" size={24} color="#64748b" />
@@ -97,19 +93,19 @@ const DoctorSidebar = ({ onClose }) => {
           </View>
 
           <TouchableOpacity
-            onPress={() => handlePress('DoctorProfile')}
+            onPress={() => handlePress('LabProfile')}
             className="flex-row items-center p-3 bg-gray-50 rounded-2xl"
           >
             <View className="h-10 w-10 rounded-full bg-blue-100 items-center justify-center">
               <Text className="text-blue-700 font-bold text-lg">
-                {currentUser?.name?.charAt(0) || "D"}
+                {currentUser?.name?.charAt(0) || "L"}
               </Text>
             </View>
             <View className="ml-3">
               <Text className="text-xs font-bold text-gray-900" numberOfLines={1}>
-                {currentUser?.name || "Doctor"}
+                {currentUser?.name || "Lab Tech"}
               </Text>
-              <Text className="text-[10px] text-gray-500 font-medium uppercase tracking-widest">Medical Professional</Text>
+              <Text className="text-[10px] text-gray-500 font-medium uppercase tracking-widest">Lab Technician</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -119,7 +115,7 @@ const DoctorSidebar = ({ onClose }) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         >
-          {doctorMenu.map((item) => (
+          {labMenu.map((item) => (
             <SidebarItem
               key={item.id}
               label={item.label}
@@ -150,4 +146,4 @@ const DoctorSidebar = ({ onClose }) => {
   );
 };
 
-export default DoctorSidebar;
+export default LabSidebar;

@@ -36,7 +36,7 @@ const routeByRole = {
   hospital_admin: "DashboardOverview",
   doctor: "DoctorDashboard",
   nurse: "NurseDashboard",
-  lab_tech: "LabTechnicianDashboard",
+  lab_tech: "LabDashboard",
   receptionist: "ReceptionistDashboard",
   pharmacist: "PharmacyDashboard",
   billing: "BillingDashboard",
