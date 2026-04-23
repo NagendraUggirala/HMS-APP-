@@ -10,7 +10,7 @@ export default function SplashScreen({ navigation }) {
     hospital_admin: "DashboardOverview",
     doctor: "DoctorDashboard",
     nurse: "NurseDashboard",
-    lab_tech: "LabTechnicianDashboard",
+    lab_tech: "LabDashboard",
     receptionist: "ReceptionistDashboard",
     pharmacist: "PharmacyDashboard",
   };
