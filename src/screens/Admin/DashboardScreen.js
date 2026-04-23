@@ -358,7 +358,7 @@ const DashboardContent = () => {
             icon="business"
             iconColor="#3b82f6"
             bgColor="#eff6ff"
-            onPress={() => navigation.navigate("HospitalManagement")}
+            onPress={() => navigation.navigate("HospitalProfile")}
           />
           <MetricCard
             title="Active Hospitals"
@@ -392,7 +392,7 @@ const DashboardContent = () => {
             icon="people"
             iconColor="#f43f5e"
             bgColor="#fff1f2"
-            onPress={() => navigation.navigate("PatientManagement")}
+            onPress={() => navigation.navigate("InpatientManagement")}
           />
           <MetricCard
             title="Appointments"
@@ -401,7 +401,7 @@ const DashboardContent = () => {
             icon="calendar"
             iconColor="#6366f1"
             bgColor="#f5f3ff"
-            onPress={() => navigation.navigate("AppointmentsManagement")}
+            onPress={() => navigation.navigate("AppointmentManagement")}
           />
         </View>
 
