@@ -50,6 +50,7 @@ const DoctorSidebar = ({ onClose }) => {
     { id: 'messaging', label: 'Messaging', icon: 'chatbubble-ellipses-outline', screen: 'DoctorMessaging' },
     { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'DoctorProfile' },
     { id: 'scheduling', label: 'Scheduling', icon: 'time-outline', screen: 'SchedulingManagement' },
+    { id: 'tracking', label: 'Appointment Tracking', icon: 'analytics-outline', screen: 'AppointmentTracking' },
     { id: 'tickets', label: 'Raise Ticket', icon: 'help-circle-outline', screen: 'DoctorRaiseTicket' },
   ];
 

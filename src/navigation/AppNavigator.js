@@ -43,6 +43,8 @@ import Messaging from "../screens/Doctor/Messaging";
 import MyProfile from "../screens/Doctor/MyProfile";
 import SchedulingManagement from "../screens/Doctor/SchedulingManagement";
 import RaiseTicket from "../screens/Doctor/RaiseTicket";
+import AppointmentTracking from "../screens/Doctor/AppointmentTracking";
+
 
 
 // Admin screens
@@ -68,11 +70,13 @@ import NotificationDetailsScreen from "../screens/Admin/NotificationDetailsScree
 
 
 import { useTheme } from "../context/ThemeContext";
+import { useAppContext } from "../context/AppContext";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { theme } = useTheme();
+  const { currentUser, isInitializing } = useAppContext();
 
   const navigationTheme = {
     ...DefaultTheme,
@@ -86,10 +90,19 @@ export default function AppNavigator() {
     },
   };
 
+  if (isInitializing) {
+    return (
+      <NavigationContainer theme={navigationTheme}>
+        <Stack.Navigator>
+          <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
   return (
     <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
-        initialRouteName="Splash"
         screenOptions={{
           headerStyle: { backgroundColor: "#fffdf8" },
           headerTintColor: "#251f33",
@@ -97,10 +110,13 @@ export default function AppNavigator() {
           contentStyle: { backgroundColor: "#fff8ef" },
         }}
       >
-        {/* Public / Entry Screens */}
-        <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ForgetPassword" component={ForgetScreen} options={{ headerShown: false }} />
+        {!currentUser ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ForgetPassword" component={ForgetScreen} options={{ headerShown: false }} />
+          </>
+        ) : (
+          <>
 
         {/* Admin Dashboard & Management */}
         <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
@@ -135,6 +151,8 @@ export default function AppNavigator() {
         <Stack.Screen name="DoctorProfile" component={MyProfile} options={{ headerShown: false }} />
         <Stack.Screen name="SchedulingManagement" component={SchedulingManagement} options={{ headerShown: false }} />
         <Stack.Screen name="DoctorRaiseTicket" component={RaiseTicket} options={{ headerShown: false }} />
+        <Stack.Screen name="AppointmentTracking" component={AppointmentTracking} options={{ headerShown: false }} />
+
 
 
         {/* General User Dashboards */}
@@ -163,7 +181,9 @@ export default function AppNavigator() {
         
         <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
         <Stack.Screen name="PharmacyDashboard" component={PharmacyDashboardScreen} options={{ title: "Pharmacy Dashboard" }} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
-}
+}

@@ -59,6 +59,14 @@ export function AppProvider({ children }) {
     loadStoredAuth();
   }, []);
 
+  // Set up global 401 handler
+  useEffect(() => {
+    api.setUnauthorizedCallback(() => {
+      console.warn("[AppContext] Unauthorized access detected, logging out...");
+      logout();
+    });
+  }, []);
+
   const login = async ({ expectedRole, email, password }) => {
     try {
       const authData = await api.adminStaffLogin(email, password);

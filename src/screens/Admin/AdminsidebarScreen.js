@@ -43,8 +43,14 @@ const SidebarItem = ({ label, icon, isActive, onPress, color = "#0052CC" }) => (
 );
 
 const Sidebar = ({ onClose }) => {
-  const navigation = useNavigation();
-  const route = useRoute();
+  let navigation, route;
+  try {
+    navigation = useNavigation();
+    route = useRoute();
+  } catch (e) {
+    navigation = null;
+    route = { name: "" };
+  }
   const { logout, currentUser } = useAppContext();
 
   // Find which screen is active based on navigation state or local state
@@ -72,14 +78,14 @@ const Sidebar = ({ onClose }) => {
   ];
 
   const handlePress = (screen) => {
-    navigation.navigate(screen);
+    if (navigation) navigation.navigate(screen);
     if (onClose) onClose();
   };
 
   const handleLogout = async () => {
     if (onClose) onClose();
     await logout();
-    navigation.replace("Login");
+    if (navigation) navigation.replace("Login");
   };
 
   return (
