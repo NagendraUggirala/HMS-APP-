@@ -9,7 +9,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Sidebar from "./AdminsidebarScreen";
 
-const { width } = Dimensions.get("window");
 const SidebarContext = createContext();
 
 export const useSidebar = () => {
@@ -22,7 +21,7 @@ export const useSidebar = () => {
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const slideAnim = useRef(new Animated.Value(-260)).current; // Requirement 2: hidden initially (-260)
+  const slideAnim = useRef(new Animated.Value(-260)).current;
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -32,42 +31,28 @@ const AdminLayout = ({ children }) => {
     }).start();
   }, [isSidebarOpen]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
     <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar, closeSidebar }}>
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.content}>{children}</View>
-
+        
         {isSidebarOpen && (
           <TouchableOpacity
             style={styles.overlay}
-            activeOpacity={1}
             onPress={closeSidebar}
           />
         )}
 
-        {/* Sidebar Sidebar - Initial state: closed (Requirement 2) */}
         <Animated.View
           style={[
             styles.sidebarWrapper,
-            {
-              transform: [
-                { translateX: slideAnim },
-              ],
-            },
+            { transform: [{ translateX: slideAnim }] },
           ]}
-          pointerEvents={isSidebarOpen ? 'auto' : 'none'}
-          accessibilityElementsHidden={!isSidebarOpen}
-          importantForAccessibility={isSidebarOpen ? 'yes' : 'no-hide-descendants'}
         >
-          <Sidebar onClose={closeSidebar} />
+          {isSidebarOpen && <Sidebar onClose={closeSidebar} />}
         </Animated.View>
       </SafeAreaView>
     </SidebarContext.Provider>
@@ -75,18 +60,9 @@ const AdminLayout = ({ children }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  content: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    zIndex: 99,
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  content: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.5)", zIndex: 99 },
   sidebarWrapper: {
     position: "absolute",
     left: 0,
@@ -96,10 +72,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     zIndex: 100,
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 4, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
   },
 });
 

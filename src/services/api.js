@@ -19,6 +19,11 @@ class ApiService {
   constructor() {
     this.baseURL = BASE_URL;
     this.hospitalId = HOSPITAL_ID;
+    this.onUnauthorized = null;
+  }
+
+  setUnauthorizedCallback(callback) {
+    this.onUnauthorized = callback;
   }
 
   async getHeaders(customHeaders = {}) {
@@ -160,6 +165,11 @@ class ApiService {
       
       const errorMessage = nestedMessage || responseData?.message || 'API request failed';
       console.warn(`[API ERROR] ${response.status} on Endpoint: ${response.url} - ${errorMessage}`);
+      
+      if (response.status === 401 && this.onUnauthorized) {
+        this.onUnauthorized();
+      }
+      
       throw new Error(errorMessage);
     }
 
