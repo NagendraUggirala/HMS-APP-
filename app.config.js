@@ -18,9 +18,9 @@ for (const envPath of envCandidates) {
 }
 
 /** Production API; ignore stale Windows env pointing at dead ngrok tunnels. */
-const DEFAULT_API_BASE_URL = 'https://hospital-backend-9mg3.onrender.com';
+const DEFAULT_API_BASE_URL = 'https://hms-backend-t9m3.onrender.com';
 function resolveApiBaseUrl() {
-  const raw = (process.env.API_BASE_URL || '').trim();
+  const raw = (process.env.API_BASE_URL || '').trim()
   if (!raw || /ngrok/i.test(raw)) {
     return DEFAULT_API_BASE_URL;
   }

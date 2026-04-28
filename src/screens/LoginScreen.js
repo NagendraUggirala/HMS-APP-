@@ -246,7 +246,7 @@ export default function LoginScreen({ navigation }) {
           
           <View className="items-center">
             <Text className="text-sm text-gray-500">Need administrative access?</Text>
-            <TouchableOpacity onPress={() => Linking.openURL('https://hospital-backend-9mg3.onrender.com/docs')}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://hms-backend-t9m3.onrender.com/docs')}>
               <Text className="mt-2 text-sm font-bold text-[#00685f]">Request New Credentials</Text>
             </TouchableOpacity>
           </View>
