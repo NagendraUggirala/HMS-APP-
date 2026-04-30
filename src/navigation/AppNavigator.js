@@ -28,7 +28,6 @@ import PharmacyExpiryAlerts from "../screens/Pharmacy/PharmacyExpiryAlerts";
 import PharmacySupplierManagement from "../screens/Pharmacy/PharmacySupplierManagement";
 import PharmacyMedicineDatabase from "../screens/Pharmacy/PharmacyMedicineDatabase";
 import PharmacySettings from "../screens/Pharmacy/PharmacySettings";
-import PharmacyProfile from "../screens/Pharmacy/PharmacyProfile";
 import PharmacyRaiseTicket from "../screens/Pharmacy/PharmacyRaiseTicket";
 
 // Lab specific screens
@@ -135,11 +134,11 @@ export default function AppNavigator() {
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ForgetPassword" component={ForgetScreen} options={{ headerShown: false }} />
           </>
-        ) : (
+        ) : currentUser.role === "hospital_admin" ? (
           <>
-            {/* Admin Dashboard & Management */}
-            <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
+            {/* Admin: DashboardOverview is FIRST so it loads on web */}
             <Stack.Screen name="DashboardOverview" component={DashboardOverview} options={{ headerShown: false }} />
+            <Stack.Screen name="HospitalAdminDashboard" component={AdminSidebarScreen} options={{ headerShown: false }} />
             <Stack.Screen name="HospitalProfile" component={HospitalProfile} options={{ headerShown: false }} />
             <Stack.Screen name="AdminProfile" component={AdminProfile} options={{ headerShown: false }} />
             <Stack.Screen name="DoctorManagement" component={DoctorManagement} options={{ headerShown: false }} />
@@ -157,8 +156,10 @@ export default function AppNavigator() {
             <Stack.Screen name="AuditLogs" component={AuditLogsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Notification" component={NotificationScreen} options={{ headerShown: false }} />
             <Stack.Screen name="NotificationDetails" component={NotificationDetailsScreen} options={{ headerShown: false }} />
-
-            {/* Doctor Dashboard & Management */}
+          </>
+        ) : currentUser.role === "doctor" ? (
+          <>
+            {/* Doctor: DoctorDashboard is FIRST */}
             <Stack.Screen name="DoctorDashboard" component={DoctorDashboardScreen} options={{ headerShown: false }} />
             <Stack.Screen name="DoctorAppointments" component={AppointmentsScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PatientRecords" component={PatientRecordsScree} options={{ headerShown: false }} />
@@ -170,8 +171,10 @@ export default function AppNavigator() {
             <Stack.Screen name="SchedulingManagement" component={SchedulingManagement} options={{ headerShown: false }} />
             <Stack.Screen name="DoctorRaiseTicket" component={RaiseTicket} options={{ headerShown: false }} />
             <Stack.Screen name="AppointmentTracking" component={AppointmentTracking} options={{ headerShown: false }} />
-
-            {/* Nurse Dashboard & Management */}
+          </>
+        ) : currentUser.role === "nurse" ? (
+          <>
+            {/* Nurse: NurseDashboard is FIRST */}
             <Stack.Screen name="NurseDashboard" component={NurseDashboardScreen} options={{ headerShown: false }} />
             <Stack.Screen name="AssignedPatients" component={AssignedPatients} options={{ headerShown: false }} />
             <Stack.Screen name="VitalsMonitoring" component={VitalsMonitoringScreen} options={{ headerShown: false }} />
@@ -181,8 +184,10 @@ export default function AppNavigator() {
             <Stack.Screen name="NursingNotes" component={NursingNotes} options={{ headerShown: false }} />
             <Stack.Screen name="DischargeSummary" component={DischargeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="NurseProfile" component={MyProfileScreen} options={{ headerShown: false }} />
-
-            {/* Lab Dashboard & Management */}
+          </>
+        ) : currentUser.role === "lab_tech" ? (
+          <>
+            {/* Lab Tech: LabDashboard is FIRST */}
             <Stack.Screen name="LabDashboard" component={LabDashboard} options={{ headerShown: false }} />
             <Stack.Screen name="CriticalResults" component={CriticalResults} options={{ headerShown: false }} />
             <Stack.Screen name="TestRegistration" component={TestRegistration} options={{ headerShown: false }} />
@@ -194,8 +199,10 @@ export default function AppNavigator() {
             <Stack.Screen name="QualityControl" component={QualityControl} options={{ headerShown: false }} />
             <Stack.Screen name="LabProfile" component={LabProfile} options={{ headerShown: false }} />
             <Stack.Screen name="LabRaiseTicket" component={LabRaiseTicket} options={{ headerShown: false }} />
-
-            {/* Receptionist Dashboard & Management */}
+          </>
+        ) : currentUser.role === "receptionist" ? (
+          <>
+            {/* Receptionist: ReceptionistDashboard is FIRST */}
             <Stack.Screen name="ReceptionistDashboard" component={ReceptionistDashboardScreen} options={{ headerShown: false }} />
             <Stack.Screen name="PatientRegistration" component={PatientRegistrationScreen} options={{ headerShown: false }} />
             <Stack.Screen name="AppointmentScheduling" component={AppointmentSchedulingScreen} options={{ headerShown: false }} />
@@ -207,11 +214,10 @@ export default function AppNavigator() {
             <Stack.Screen name="ReceptionistDischarge" component={DischargeSummaryScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ReceptionistProfile" component={ReceptionistProfileScreen} options={{ headerShown: false }} />
             <Stack.Screen name="ReceptionistRaiseTicket" component={RaiseTicketRecpScreen} options={{ headerShown: false }} />
-
-            {/* Billing Dashboard */}
-            <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
-
-            {/* Pharmacy Dashboard & Management */}
+          </>
+        ) : currentUser.role === "pharmacist" ? (
+          <>
+            {/* Pharmacist: PharmacyDashboard is FIRST */}
             <Stack.Screen name="PharmacyDashboard" component={PharmacyDashboard} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacyInventory" component={PharmacyInventory} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacyPurchaseOrders" component={PharmacyPurchaseOrders} options={{ headerShown: false }} />
@@ -220,8 +226,12 @@ export default function AppNavigator() {
             <Stack.Screen name="PharmacySupplierManagement" component={PharmacySupplierManagement} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacyMedicineDatabase" component={PharmacyMedicineDatabase} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacySettings" component={PharmacySettings} options={{ headerShown: false }} />
-            <Stack.Screen name="PharmacyProfile" component={PharmacyProfile} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacyRaiseTicket" component={PharmacyRaiseTicket} options={{ headerShown: false }} />
+          </>
+        ) : (
+          <>
+            {/* Billing / fallback */}
+            <Stack.Screen name="BillingDashboard" component={BillingDashboardScreen} options={{ title: "Billing Dashboard" }} />
           </>
         )}
       </Stack.Navigator>
