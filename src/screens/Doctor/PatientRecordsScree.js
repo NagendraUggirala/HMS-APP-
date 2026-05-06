@@ -328,6 +328,7 @@ const PatientRecordsContent = () => {
         {/* Simple Search Section */}
         <View className="bg-white p-5 rounded-[32px] border border-slate-100 shadow-sm mb-6">
           <View className="flex-row items-center justify-between mb-4">
+
             <Text className="text-sm font-black text-slate-900 uppercase tracking-widest">Search Directory</Text>
             <TouchableOpacity onPress={() => setIsAdvancedOpen(!isAdvancedOpen)}>
               <Text className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">
