@@ -23,7 +23,7 @@ export const useSidebar = () => {
   return context;
 };
 
-const PharmacyLayout = ({ children }) => {
+const PharmacyLayout = ({ children, navigation, route }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-280)).current; 
   const { currentUser } = useAppContext();
@@ -85,7 +85,7 @@ const PharmacyLayout = ({ children }) => {
             { transform: [{ translateX: slideAnim }] },
           ]}
         >
-          <PharmacySidebar onClose={closeSidebar} />
+          <PharmacySidebar navigation={navigation} route={route} onClose={closeSidebar} />
         </Animated.View>
       </SafeAreaView>
     </SidebarContext.Provider>

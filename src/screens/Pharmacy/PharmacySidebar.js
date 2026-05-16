@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -42,12 +42,11 @@ const SidebarItem = ({ label, icon, isActive, onPress }) => (
   </TouchableOpacity>
 );
 
-const PharmacySidebar = ({ onClose }) => {
-  const navigation = useNavigation();
-  const route = useRoute();
+const PharmacySidebar = ({ navigation, route, onClose }) => {
+
   const { logout, currentUser } = useAppContext();
 
-  const activeRoute = route.name;
+  const activeRoute = route?.name || "";
 
   const pharmacyMenu = [
     { id: 'dashboard', label: 'Dashboard', icon: 'grid-outline', screen: 'PharmacyDashboard' },
@@ -55,21 +54,30 @@ const PharmacySidebar = ({ onClose }) => {
     { id: 'purchaseorders', label: 'Purchase Orders', icon: 'cart-outline', screen: 'PharmacyPurchaseOrders' },
     { id: 'salestracking', label: 'Sales Tracking', icon: 'bar-chart-outline', screen: 'PharmacySalesTracking' },
     { id: 'expiryalerts', label: 'Expiry Alerts', icon: 'alert-circle-outline', screen: 'PharmacyExpiryAlerts' },
-    { id: 'suppliermanagement', label: 'Supplier Management', icon: 'truck-outline', screen: 'PharmacySupplierManagement' },
+    { id: 'suppliermanagement', label: 'Supplier Management', icon: 'bus-outline', screen: 'PharmacySupplierManagement' },
+    { id: 'stock', label: 'Stock', icon: 'layers-outline', screen: 'PharmacyStock' },
+    { id: 'grn', label: 'GRN', icon: 'receipt-outline', screen: 'PharmacyGRN' },
+    { id: 'return', label: 'Return', icon: 'return-down-back-outline', screen: 'PharmacyReturn' },
     { id: 'medicinedatabase', label: 'Medicine Database', icon: 'medical-outline', screen: 'PharmacyMedicineDatabase' },
+    { id: 'report', label: 'Report', icon: 'document-text-outline', screen: 'PharmacyReport' },
     { id: 'settings', label: 'Settings', icon: 'settings-outline', screen: 'PharmacySettings' },
     { id: 'raise-ticket', label: 'Raise Ticket', icon: 'mail-outline', screen: 'PharmacyRaiseTicket' }
+
   ];
 
   const handlePress = (screen) => {
-    navigation.navigate(screen);
+    if (navigation) {
+      navigation.navigate(screen);
+    }
     if (onClose) onClose();
   };
 
   const handleLogout = async () => {
     if (onClose) onClose();
     await logout();
-    navigation.replace("Login");
+    if (navigation) {
+      navigation.replace("Login");
+    }
   };
 
   return (
@@ -86,7 +94,7 @@ const PharmacySidebar = ({ onClose }) => {
               <Text className="text-sm font-bold text-blue-600 -mt-1">Curator Pharmacy</Text>
             </View>
             <TouchableOpacity onPress={onClose} style={{ position: 'absolute', right: 0 }}>
-                <Ionicons name="close" size={24} color="#64748b" />
+              <Ionicons name="close" size={24} color="#64748b" />
             </TouchableOpacity>
           </View>
 
