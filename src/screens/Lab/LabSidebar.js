@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationContext, NavigationRouteContext } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -43,11 +43,12 @@ const SidebarItem = ({ label, icon, isActive, onPress }) => (
 );
 
 const LabSidebar = ({ onClose }) => {
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = React.useContext(NavigationContext);
+  const route = React.useContext(NavigationRouteContext);
+
   const { logout, currentUser } = useAppContext();
 
-  const activeRoute = route.name;
+  const activeRoute = route ? route.name : "";
 
   const labMenu = [
     { id: 'lab-dashboard', label: 'Lab Dashboard', icon: 'grid-outline', screen: 'LabDashboard' },
@@ -64,14 +65,18 @@ const LabSidebar = ({ onClose }) => {
   ];
 
   const handlePress = (screen) => {
-    navigation.navigate(screen);
+    if (navigation) {
+      navigation.navigate(screen);
+    }
     if (onClose) onClose();
   };
 
   const handleLogout = async () => {
     if (onClose) onClose();
     await logout();
-    navigation.replace("Login");
+    if (navigation) {
+      navigation.replace("Login");
+    }
   };
 
   return (

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { NavigationContext } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
 import LabSidebar from "./LabSidebar";
 
@@ -25,8 +26,10 @@ export const useSidebar = () => {
 
 const LabLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const slideAnim = useRef(new Animated.Value(-280)).current; 
-  const { currentUser } = useAppContext();
+  const { currentUser, logout } = useAppContext();
+  const navigation = React.useContext(NavigationContext);
 
   useEffect(() => {
     Animated.spring(slideAnim, {
@@ -57,15 +60,56 @@ const LabLayout = ({ children }) => {
               <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-widest -mt-1">Laboratory Management</Text>
             </View>
           </View>
-          <View className="flex-row items-center">
-            <TouchableOpacity className="h-8 w-8 items-center justify-center rounded-xl bg-gray-50 mr-3">
-              <Ionicons name="notifications-outline" size={18} color="#64748b" />
-            </TouchableOpacity>
-            <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-blue-600">
+          
+          {/* Profile Icon with Dropdown Menu */}
+          <View className="flex-row items-center relative z-50">
+            <TouchableOpacity 
+              onPress={() => setShowProfileMenu(!showProfileMenu)}
+              className="h-10 w-10 items-center justify-center rounded-full bg-blue-600 shadow-sm"
+              activeOpacity={0.8}
+            >
               <Text className="text-white font-bold text-xs">
                 {currentUser?.name?.substring(0, 2).toUpperCase() || "LB"}
               </Text>
             </TouchableOpacity>
+
+            {showProfileMenu && (
+              <View 
+                className="absolute right-0 top-12 bg-white rounded-2xl border border-slate-100 shadow-2xl p-2 w-48 z-[999]"
+                style={{
+                  elevation: 10,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowProfileMenu(false);
+                    if (navigation) navigation.navigate("LabProfile");
+                  }}
+                  className="flex-row items-center p-3 rounded-xl active:bg-slate-50"
+                >
+                  <Ionicons name="person-outline" size={16} color="#475569" />
+                  <Text className="ml-2.5 text-xs font-extrabold text-slate-700">View Profile</Text>
+                </TouchableOpacity>
+
+                <View className="h-[1px] bg-slate-100 my-1" />
+
+                <TouchableOpacity
+                  onPress={async () => {
+                    setShowProfileMenu(false);
+                    await logout();
+                    if (navigation) navigation.replace("Login");
+                  }}
+                  className="flex-row items-center p-3 rounded-xl active:bg-rose-50"
+                >
+                  <Ionicons name="log-out-outline" size={16} color="#ef4444" />
+                  <Text className="ml-2.5 text-xs font-extrabold text-rose-600">Logout</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
 
