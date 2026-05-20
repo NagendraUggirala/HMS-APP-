@@ -63,7 +63,9 @@ export function AppProvider({ children }) {
   useEffect(() => {
     api.setUnauthorizedCallback(() => {
       console.warn("[AppContext] Unauthorized access detected, logging out...");
-      logout();
+      setTimeout(() => {
+        logout();
+      }, 100);
     });
   }, []);
 

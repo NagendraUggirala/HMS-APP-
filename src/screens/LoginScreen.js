@@ -13,15 +13,7 @@ import {
 import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { useAppContext } from "../context/AppContext";
 
-const roleOptions = [
 
-  { label: "Hospital Admin", value: "hospital_admin", icon: "admin-panel-settings" },
-  { label: "Doctor", value: "doctor", icon: "medical-services" },
-  { label: "Nurse", value: "nurse", icon: "health-and-safety" },
-  { label: "Lab Technician", value: "lab_tech", icon: "biotech" },
-  { label: "Receptionist", value: "receptionist", icon: "receipt-long" },
-  { label: "Pharmacist", value: "pharmacist", icon: "local-pharmacy" },
-];
 
 const DEMO_USERS = [
   { email: 'admin@dcm.demo', password: 'admin123', role: 'hospital_admin', name: 'Admin User' },
@@ -44,23 +36,15 @@ const routeByRole = {
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAppContext();
-  const [selectedRole, setSelectedRole] = useState("hospital_admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false);
   const [remember, setRemember] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setIsRoleMenuOpen(false);
-  };
-
   const fillDemoCredentials = (user) => {
     setEmail(user.email);
     setPassword(user.password);
-    setSelectedRole(user.role);
     setRemember(true);
   };
 
@@ -73,7 +57,6 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true);
     try {
       const result = await login({
-        expectedRole: selectedRole,
         email: email.trim(),
         password,
       });
@@ -115,54 +98,9 @@ export default function LoginScreen({ navigation }) {
       <View className="px-6 -mt-8">
         <View className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100">
           <Text className="text-2xl font-bold text-gray-900 mb-2">Welcome back</Text>
-          <Text className="text-gray-500 mb-8">Select your role and sign in to continue</Text>
+          <Text className="text-gray-500 mb-8">Sign in to your account to continue</Text>
 
-          {/* Role Selector */}
-          <View className="mb-6">
-            <Text className="text-sm font-semibold text-gray-700 mb-2 ml-1">Account category</Text>
-            <TouchableOpacity
-              className="flex-row items-center justify-between rounded-2xl bg-gray-50 border border-gray-200 px-4 py-4"
-              onPress={() => setIsRoleMenuOpen((currentState) => !currentState)}
-              activeOpacity={0.7}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons 
-                  name={roleOptions.find((opt) => opt.value === selectedRole)?.icon} 
-                  size={20} 
-                  color="#00685f" 
-                />
-                <Text className="ml-3 text-gray-900 font-medium">
-                  {roleOptions.find((option) => option.value === selectedRole)?.label}
-                </Text>
-              </View>
-              <MaterialIcons 
-                name={isRoleMenuOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-                size={24} 
-                color="gray" 
-              />
-            </TouchableOpacity>
 
-            {isRoleMenuOpen && (
-              <View className="mt-2 rounded-2xl border border-gray-100 bg-white shadow-lg overflow-hidden">
-                {roleOptions.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    className={`flex-row items-center px-4 py-4 border-b border-gray-50 ${selectedRole === option.value ? 'bg-blue-50' : ''}`}
-                    onPress={() => handleRoleSelect(option.value)}
-                  >
-                    <MaterialIcons 
-                      name={option.icon} 
-                      size={20} 
-                      color={selectedRole === option.value ? "#00685f" : "gray"} 
-                    />
-                    <Text className={`ml-3 font-medium ${selectedRole === option.value ? 'text-[#00685f]' : 'text-gray-700'}`}>
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
 
           {/* Login Fields */}
           <View className="space-y-4">

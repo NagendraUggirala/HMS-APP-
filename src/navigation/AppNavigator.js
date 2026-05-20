@@ -30,6 +30,11 @@ import PharmacySupplierManagement from "../screens/Pharmacy/PharmacySupplierMana
 import PharmacyMedicineDatabase from "../screens/Pharmacy/PharmacyMedicineDatabase";
 import PharmacySettings from "../screens/Pharmacy/PharmacySettings";
 import PharmacyRaiseTicket from "../screens/Pharmacy/PharmacyRaiseTicket";
+import PharmacyStock from "../screens/Pharmacy/PharmacyStock";
+import PharmacyReturn from "../screens/Pharmacy/PharmacyReturn";
+import PharmacyGRN from "../screens/Pharmacy/PharmacyGRN";
+import PharmacyReport from "../screens/Pharmacy/PharmacyReport";
+
 
 // Lab specific screens
 import LabDashboard from "../screens/Lab/LabDashboard";
@@ -229,6 +234,11 @@ export default function AppNavigator() {
             <Stack.Screen name="PharmacyMedicineDatabase" component={PharmacyMedicineDatabase} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacySettings" component={PharmacySettings} options={{ headerShown: false }} />
             <Stack.Screen name="PharmacyRaiseTicket" component={PharmacyRaiseTicket} options={{ headerShown: false }} />
+            <Stack.Screen name="PharmacyStock" component={PharmacyStock} options={{ headerShown: false }} />
+            <Stack.Screen name="PharmacyReturn" component={PharmacyReturn} options={{ headerShown: false }} />
+            <Stack.Screen name="PharmacyGRN" component={PharmacyGRN} options={{ headerShown: false }} />
+            <Stack.Screen name="PharmacyReport" component={PharmacyReport} options={{ headerShown: false }} />
+
           </>
         ) : (
           <>
