@@ -58,6 +58,7 @@ const NurseSidebar = ({ onClose }) => {
     { id: 'lab', label: 'Lab Tests & Upload', icon: 'flask-outline', screen: 'LabTestsUpload' },
     { id: 'notes', label: 'Nursing Notes', icon: 'document-text-outline', screen: 'NursingNotes' },
     { id: 'discharge', label: 'Discharge Summary', icon: 'exit-outline', screen: 'DischargeSummary' },
+    { id: 'raiseTicket', label: 'Raise Ticket', icon: 'headset-outline', screen: 'NurseRaiseTicket' },
     { id: 'profile', label: 'My Profile', icon: 'person-outline', screen: 'NurseProfile' },
   ];
 
