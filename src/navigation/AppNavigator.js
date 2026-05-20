@@ -16,6 +16,7 @@ import LabTestsUpload from "../screens/Nurse/LabTestsUpload";
 import NursingNotes from "../screens/Nurse/NursingNotes";
 import DischargeScreen from "../screens/Nurse/DischargeScreen";
 import MyProfileScreen from "../screens/Nurse/MyProfileScreen";
+import NurseRaiseTicket from "../screens/Nurse/NurseRaiseTicket";
 import BillingDashboardScreen from "../screens/Billing/BillingDashboardScreen";
 import ReceptionistDashboardScreen from "../screens/Receptionist/ReceptionistDashboardScreen";
 
@@ -184,6 +185,7 @@ export default function AppNavigator() {
             <Stack.Screen name="NursingNotes" component={NursingNotes} options={{ headerShown: false }} />
             <Stack.Screen name="DischargeSummary" component={DischargeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="NurseProfile" component={MyProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="NurseRaiseTicket" component={NurseRaiseTicket} options={{ headerShown: false }} />
           </>
         ) : currentUser.role === "lab_tech" ? (
           <>
